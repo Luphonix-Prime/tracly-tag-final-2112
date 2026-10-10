@@ -213,7 +213,16 @@ router.post("/system/reset-database", async (req, res): Promise<void> => {
 router.post("/system/reset-id-sequence", async (req, res): Promise<void> => {
   try {
     const { sql } = await import("drizzle-orm");
-    await db.run(sql`DELETE FROM sqlite_sequence`);
+    await db.execute(sql`
+      DO $$
+      DECLARE
+        r RECORD;
+      BEGIN
+        FOR r IN (SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = 'public') LOOP
+          EXECUTE 'ALTER SEQUENCE ' || quote_ident(r.sequence_name) || ' RESTART WITH 1';
+        END LOOP;
+      END $$;
+    `);
     res.json({ success: true, message: "ID autoincrement sequence reset to start from 1 for all tables." });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to reset ID sequences" });

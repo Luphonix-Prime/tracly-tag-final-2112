@@ -1,6 +1,6 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 
-export const systemConfigsTable = sqliteTable("system_configs", {
+export const systemConfigsTable = pgTable("system_configs", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
 });

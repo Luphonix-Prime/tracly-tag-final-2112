@@ -14,14 +14,21 @@ import { generateUnitCode, generateSsccCode } from "../src/lib/gs1";
 
 async function run() {
   console.log("Truncating existing tables...");
-  await db.delete(systemConfigsTable);
-  await db.delete(customerScansTable);
-  await db.delete(codesTable);
-  await db.delete(batchesTable);
-  await db.delete(locationsTable);
-  await db.delete(productsTable);
-  await db.delete(usersTable);
-  await db.delete(companiesTable);
+  try {
+    const { sql } = await import("drizzle-orm");
+    await db.execute(
+      sql`TRUNCATE TABLE customer_scans, codes, batches, locations, products, users, companies, system_configs RESTART IDENTITY CASCADE`
+    );
+  } catch (e) {
+    await db.delete(systemConfigsTable).catch(() => {});
+    await db.delete(customerScansTable).catch(() => {});
+    await db.delete(codesTable).catch(() => {});
+    await db.delete(batchesTable).catch(() => {});
+    await db.delete(locationsTable).catch(() => {});
+    await db.delete(productsTable).catch(() => {});
+    await db.delete(usersTable).catch(() => {});
+    await db.delete(companiesTable).catch(() => {});
+  }
   console.log("Truncation complete.");
 
   console.log("Seeding TraclyTag database...");
@@ -322,5 +329,9 @@ async function run() {
   console.log("System configs seeded: hideMappingCode, datamatrixUrlMode, hidePackagingHierarchy, hidePackagingLevel, enableOtpSystem, enableCustomerScanOtp");
 
   console.log("Seed complete.");
+  process.exit(0);
 }
-run().catch(console.error);
+run().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

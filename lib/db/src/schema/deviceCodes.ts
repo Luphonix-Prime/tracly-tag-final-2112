@@ -1,8 +1,8 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, integer, text } from "drizzle-orm/pg-core";
 import { usersTable } from "./users";
 
-export const deviceCodesTable = sqliteTable("device_codes", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const deviceCodesTable = pgTable("device_codes", {
+  id: serial("id").primaryKey(),
   deviceCode: text("device_code").notNull().unique(),
   userCode: text("user_code").notNull().unique(),
   userId: integer("user_id").references(() => usersTable.id, { onDelete: "cascade" }),

@@ -26,9 +26,7 @@ console.log("- DATABASE_AUTH_TOKEN:", dbAuthToken ? "Found (masked)" : "Missing"
 console.log("- SESSION_SECRET:", sessionSecret ? "Found (masked)" : "Missing");
 
 const defineEnv = {
-  "process.env.DATABASE_URL": dbUrl ? JSON.stringify(dbUrl) : "undefined",
-  "process.env.DATABASE_AUTH_TOKEN": dbAuthToken ? JSON.stringify(dbAuthToken) : "undefined",
-  "process.env.SESSION_SECRET": sessionSecret ? JSON.stringify(sessionSecret) : "undefined",
+  // Let runtime environment variables take precedence in Docker / production
 };
 
 async function buildAll() {

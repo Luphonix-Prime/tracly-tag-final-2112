@@ -463,23 +463,23 @@ export async function seedDatabase(dbInstance: any, seedData?: any) {
 }
 
 export async function resetAndSeedDatabase(dbInstance: any, seedData?: any) {
-  // Delete all records from tables in correct dependency order
-  await dbInstance.delete(customerScansTable);
-  await dbInstance.delete(deviceCodesTable);
-  await dbInstance.delete(passkeysTable);
-  await dbInstance.delete(codesTable);
-  await dbInstance.delete(batchesTable);
-  await dbInstance.delete(productsTable);
-  await dbInstance.delete(locationsTable);
-  await dbInstance.delete(usersTable);
-  await dbInstance.delete(companiesTable);
-
-  // Reset SQLite auto-increment primary key counters back to 1
+  // Truncate all tables and reset serial identities for PostgreSQL
   try {
     const { sql } = await import("drizzle-orm");
-    await dbInstance.run(sql`DELETE FROM sqlite_sequence`);
+    await dbInstance.execute(
+      sql`TRUNCATE TABLE customer_scans, device_codes, passkeys, codes, batches, products, locations, users, companies, counter, system_configs, sso_requests RESTART IDENTITY CASCADE`
+    );
   } catch (e) {
-    // sqlite_sequence might not exist if tables haven't used autoincrement yet
+    // Fallback deletion in case of individual table clearing
+    await dbInstance.delete(customerScansTable).catch(() => {});
+    await dbInstance.delete(deviceCodesTable).catch(() => {});
+    await dbInstance.delete(passkeysTable).catch(() => {});
+    await dbInstance.delete(codesTable).catch(() => {});
+    await dbInstance.delete(batchesTable).catch(() => {});
+    await dbInstance.delete(productsTable).catch(() => {});
+    await dbInstance.delete(locationsTable).catch(() => {});
+    await dbInstance.delete(usersTable).catch(() => {});
+    await dbInstance.delete(companiesTable).catch(() => {});
   }
 
   // Run the seeding logic

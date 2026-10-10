@@ -1,8 +1,8 @@
-import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, integer, text, doublePrecision, boolean } from "drizzle-orm/pg-core";
 import { companiesTable } from "./companies";
 
-export const productsTable = sqliteTable("products", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const productsTable = pgTable("products", {
+  id: serial("id").primaryKey(),
   companyId: integer("company_id").references(() => companiesTable.id, { onDelete: "cascade" }),
   skuId: text("sku_id").notNull(),
   name: text("name").notNull(),
@@ -10,17 +10,17 @@ export const productsTable = sqliteTable("products", {
   marketedBy: text("marketed_by").notNull(),
   sapDescription: text("sap_description"),
   gtin: text("gtin"),
-  mrp: real("mrp").notNull(),
+  mrp: doublePrecision("mrp").notNull(),
   registrationNo: text("registration_no"),
   hsnCode: text("hsn_code"),
-  gstRate: real("gst_rate"),
+  gstRate: doublePrecision("gst_rate"),
   unit: text("unit"),
-  weightValue: real("weight_value"),
+  weightValue: doublePrecision("weight_value"),
   weightUnit: text("weight_unit"),
   packagingType: text("packaging_type"),
   shelfLifeDays: integer("shelf_life_days"),
   countryOfOrigin: text("country_of_origin").$defaultFn(() => "IND"),
-  isGs1Compliant: integer("is_gs1_compliant", { mode: "boolean" }).default(false),
+  isGs1Compliant: boolean("is_gs1_compliant").default(false),
   l1Size: integer("l1_size").notNull(),
   l2Size: integer("l2_size").notNull(),
   shipperSize: integer("shipper_size").notNull(),

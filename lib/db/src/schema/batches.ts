@@ -1,8 +1,8 @@
-import { sqliteTable, integer, text, unique } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, integer, text, unique } from "drizzle-orm/pg-core";
 import { productsTable } from "./products";
 
-export const batchesTable = sqliteTable("batches", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const batchesTable = pgTable("batches", {
+  id: serial("id").primaryKey(),
   productId: integer("product_id").notNull().references(() => productsTable.id, { onDelete: "cascade" }),
   batchNumber: text("batch_number").notNull(),
   mfgDate: text("mfg_date").notNull(),

@@ -1,21 +1,61 @@
 services:
-  app:
+  # 1. PostgreSQL Database Service
+  db:
+    image: postgres:18-alpine
+    container_name: traclytag-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tracelytag}
+      POSTGRES_USER: ${POSTGRES_USER:-tracelytag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracelytag_secret_2026}
+    volumes:
+      - tracelytag-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tracelytag} -d ${POSTGRES_DB:-tracelytag}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # 2. Backend API Server Service
+  backend:
     build:
       context: .
-      target: runner
+      dockerfile: Dockerfile.backend
+    container_name: traclytag-backend
+    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "3000:3000"
     env_file:
       - .env
     environment:
-      # Vite proxy requests internally to port 3000
-      - API_URL=http://localhost:3000
+      - PORT=3000
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-tracelytag}:${POSTGRES_PASSWORD:-tracelytag_secret_2026}@db:5432/${POSTGRES_DB:-tracelytag}
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      # Mount the database directory to persist SQLite data on the host
-      - ./lib/db:/app/lib/db
-      # Mount the uploads directory to persist uploaded assets
       - ./artifacts/api-server/uploads:/app/artifacts/api-server/uploads
-      # Mount Let's Encrypt SSL certificates directory on host
-      - ./letsencrypt:/etc/letsencrypt
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # 3. Frontend Web Client Service (Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: traclytag-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  tracelytag-postgres:

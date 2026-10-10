@@ -1,0 +1,22 @@
+# Docker Compose configuration for local development
+# Exposes port 5432 to the host so local development scripts (e.g. pnpm dev, pnpm db:seed) can connect directly
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tracelytag}
+      POSTGRES_USER: ${POSTGRES_USER:-tracelytag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracelytag_secret_2026}
+    volumes:
+      - tracelytag-postgres-dev:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tracelytag} -d ${POSTGRES_DB:-tracelytag}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  tracelytag-postgres-dev:

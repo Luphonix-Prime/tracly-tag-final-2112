@@ -1,8 +1,8 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, integer, text } from "drizzle-orm/pg-core";
 import { codesTable } from "./codes";
 
-export const counterTable = sqliteTable("counter", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const counterTable = pgTable("counter", {
+  id: serial("id").primaryKey(),
   codeId: integer("code_id").notNull().references(() => codesTable.id, { onDelete: "cascade" }),
   rawLink: text("raw_link").notNull(),
   scanCount: integer("scan_count").notNull().default(1),

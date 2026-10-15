@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tracelytag-db-verify
+  namespace: tracelytag
+spec:
+  ttlSecondsAfterFinished: 300 # Cleans up pod 5 minutes after success
+  template:
+    metadata:
+      labels:
+        app: tracelytag-db-verify
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: db-verify
+          image: postgres:18-alpine
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tracelytag-secrets
+                  key: DATABASE_PASSWORD
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Checking TracelyTag database connectivity..."
+              psql -h tracelytag-postgres-svc -U tracelytag -d tracelytag -c "SELECT count(*) AS total_tables FROM information_schema.tables WHERE table_schema = 'public';"
+              echo "Database verification job finished successfully!"

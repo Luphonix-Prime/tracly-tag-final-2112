@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracelytag-pgbouncer
+  namespace: tracelytag
+  labels:
+    app: tracelytag-pgbouncer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tracelytag-pgbouncer
+  template:
+    metadata:
+      labels:
+        app: tracelytag-pgbouncer
+    spec:
+      containers:
+        - name: pgbouncer
+          image: edoburu/pgbouncer:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: pgbouncer
+          env:
+            # Connects PgBouncer to real PostgreSQL service or managed cloud DB
+            - name: DB_HOST
+              value: "tracelytag-postgres-svc" # Or RDS / Cloud SQL endpoint
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tracelytag-secrets
+                  key: DATABASE_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tracelytag-secrets
+                  key: DATABASE_PASSWORD
+            - name: DB_NAME
+              value: "tracelytag"
+            - name: POOL_MODE
+              value: "transaction"
+            - name: MAX_CLIENT_CONN
+              value: "1000"
+            - name: DEFAULT_POOL_SIZE
+              value: "25"
+            - name: MIN_POOL_SIZE
+              value: "5"
+            - name: RESERVE_POOL_SIZE
+              value: "5"
+            - name: SERVER_RESET_QUERY
+              value: "DISCARD ALL"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracelytag-pgbouncer-svc
+  namespace: tracelytag
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: pgbouncer
+  selector:
+    app: tracelytag-pgbouncer
+  type: ClusterIP

@@ -60,7 +60,6 @@ devsecops-audit/*
 k8s/deployment.yaml
 Jenkinsfile
 aws/*
-k8s/*
 
 jenkins-cli.jar
 terminal_logs/*

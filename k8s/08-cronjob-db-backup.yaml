@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tracelytag-db-backup
+  namespace: tracelytag
+spec:
+  # Run every night at 2:00 AM (UTC)
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: tracelytag-db-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: db-backup
+              image: postgres:18-alpine
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: tracelytag-secrets
+                      key: DATABASE_PASSWORD
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Starting TracelyTag automated nightly backup at $(date)..."
+                  pg_dump -h tracelytag-postgres-svc -U tracelytag -d tracelytag | gzip > /tmp/backup-$(date +%Y%m%d_%H%M%S).sql.gz
+                  echo "Backup completed successfully! Size: $(ls -lh /tmp/backup-*.sql.gz | awk '{print $5}')"

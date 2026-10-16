@@ -58,7 +58,6 @@ run-secops.bat
 devsecops-audit/*
 .github/workflows/ci-cd.yml
 k8s/deployment.yaml
-Jenkinsfile
 aws/*
 
 jenkins-cli.jar

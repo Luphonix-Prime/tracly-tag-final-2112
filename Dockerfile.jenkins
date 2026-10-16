@@ -8,6 +8,8 @@ RUN apt-get update && \
     curl -SL https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/libexec/docker/cli-plugins/docker-compose && \
     chmod +x /usr/libexec/docker/cli-plugins/docker-compose && \
     ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && \
+    curl -fsSL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x /usr/local/bin/kubectl && \
     apt-get clean
 
 USER jenkins

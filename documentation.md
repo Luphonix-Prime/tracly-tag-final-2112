@@ -169,24 +169,33 @@ sudo systemctl restart jenkins
 
 ---
 
-### Option B: Containerized Jenkins via `Dockerfile.jenkins`
+### Option B: Containerized Jenkins via `Dockerfile.jenkins` (Runs on Port 8088)
 
-If you prefer running Jenkins as a container:
+Running Jenkins on port **8088** leaves ports **80**, **443**, and **8080** entirely free for the main TracelyTag production application and ingress traffic:
+
 ```bash
-# 1. Build the Jenkins image containing Docker & Kubectl
+# 1. Open port 8088 in VPS firewall (if UFW is enabled)
+sudo ufw allow 8088/tcp
+sudo ufw allow 50000/tcp
+
+# 2. Build the Jenkins image containing Docker & Kubectl
 docker build -t tracelytag-jenkins -f Dockerfile.jenkins .
 
-# 2. Run Jenkins mounting the Docker socket and K3s configuration
+# 3. Launch Jenkins on dedicated port 8088
 docker run -d \
   --name jenkins \
   --restart always \
-  -p 8080:8080 \
+  -p 8088:8080 \
   -p 50000:50000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc/rancher/k3s/k3s.yaml:/etc/rancher/k3s/k3s.yaml:ro \
   -v jenkins_home:/var/jenkins_home \
   tracelytag-jenkins
 ```
+
+> [!NOTE]
+> - **Jenkins UI**: Accessible at `http://51.79.160.129:8088`
+> - **Main Application (TracelyTag)**: Accessible at `http://51.79.160.129` / `https://app.tracelytag.com` (ports 80 & 443, internal 8080)
 
 ---
 
@@ -195,16 +204,14 @@ docker run -d \
 ### Step 1: Unlock Jenkins
 Open your browser and navigate to:
 ```
-http://51.79.160.129:8080
+http://51.79.160.129:8088
 ```
-Retrieve the initial administrator password:
+Retrieve the initial administrator password from the container:
 ```bash
-# If installed natively:
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-
-# If running via Docker:
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
+*(Or if running natively: `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`)*
+
 
 1. Paste the password and click **Continue**.
 2. Click **Install suggested plugins**.

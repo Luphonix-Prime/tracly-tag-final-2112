@@ -181,16 +181,21 @@ sudo ufw allow 50000/tcp
 # 2. Build the Jenkins image containing Docker & Kubectl
 docker build -t tracelytag-jenkins -f Dockerfile.jenkins .
 
-# 3. Launch Jenkins on dedicated port 8088
+# 3. Launch Jenkins on dedicated port 8088 (with --user root for docker.sock access)
 docker run -d \
   --name jenkins \
   --restart always \
+  --user root \
   -p 8088:8080 \
   -p 50000:50000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc/rancher/k3s/k3s.yaml:/etc/rancher/k3s/k3s.yaml:ro \
   -v jenkins_home:/var/jenkins_home \
   tracelytag-jenkins
+
+# Note: If your container is already running without --user root, grant socket permissions:
+sudo chmod 666 /var/run/docker.sock
+sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 ```
 
 > [!NOTE]

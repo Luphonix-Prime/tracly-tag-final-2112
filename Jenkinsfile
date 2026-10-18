@@ -29,6 +29,7 @@ pipeline {
         
         DOCKER_REGISTRY_CREDENTIALS_ID = 'docker-hub-credentials'
         K8S_DIR = 'k8s'
+        KUBECONFIG = "${WORKSPACE}/.kube/config"
         PATH = "${WORKSPACE}/bin:${env.PATH}"
     }
 
@@ -49,6 +50,7 @@ pipeline {
 
                     sh '''
                         mkdir -p "${WORKSPACE}/bin"
+                        mkdir -p "${WORKSPACE}/.kube"
 
                         # Ensure Docker CLI is available
                         if ! command -v docker >/dev/null 2>&1; then
@@ -70,6 +72,18 @@ pipeline {
                         echo "[+] Tool versions:"
                         docker --version || echo "Docker CLI check done."
                         kubectl version --client --output=yaml || echo "kubectl check done."
+
+                        # Verify Docker daemon communication
+                        if ! docker info >/dev/null 2>&1; then
+                            echo "=========================================================="
+                            echo "[!] WARNING: Docker daemon socket is not accessible (/var/run/docker.sock)."
+                            echo "    If Jenkins runs in Docker, fix permissions on your VPS host:"
+                            echo "      sudo chmod 666 /var/run/docker.sock"
+                            echo "    Or run container with: --user root"
+                            echo "=========================================================="
+                        else
+                            echo "[+] Docker daemon connection verified."
+                        fi
                     '''
                 }
             }
@@ -93,43 +107,55 @@ pipeline {
                 script {
                     sh '''
                         echo "[*] Detecting Kubernetes cluster on OVH Ubuntu VPS..."
+                        mkdir -p "${WORKSPACE}/.kube"
 
-                        # 1. Resolve Kubeconfig path (K3s default on Ubuntu VPS or standard ~/.kube/config)
-                        if [ -z "${KUBECONFIG:-}" ]; then
-                            if [ -f "/etc/rancher/k3s/k3s.yaml" ]; then
-                                export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-                                # Allow jenkins/current user read access to K3s configuration if needed
-                                if [ ! -r "/etc/rancher/k3s/k3s.yaml" ]; then
-                                    sudo chmod 644 /etc/rancher/k3s/k3s.yaml 2>/dev/null || true
-                                fi
-                            elif [ -f "${HOME}/.kube/config" ]; then
-                                export KUBECONFIG="${HOME}/.kube/config"
-                            fi
+                        CONFIG_SRC=""
+                        if [ -f "/etc/rancher/k3s/k3s.yaml" ] && [ -s "/etc/rancher/k3s/k3s.yaml" ]; then
+                            CONFIG_SRC="/etc/rancher/k3s/k3s.yaml"
+                        elif [ -f "${HOME}/.kube/config" ] && [ -s "${HOME}/.kube/config" ]; then
+                            CONFIG_SRC="${HOME}/.kube/config"
                         fi
 
-                        # 2. Test connectivity
+                        if [ -n "$CONFIG_SRC" ]; then
+                            echo "[*] Initializing kubeconfig from ${CONFIG_SRC}..."
+                            cp -f "$CONFIG_SRC" "${WORKSPACE}/.kube/config"
+                            chmod 600 "${WORKSPACE}/.kube/config"
+                        else
+                            echo "[!] Notice: No kubeconfig found at /etc/rancher/k3s/k3s.yaml or ~/.kube/config."
+                        fi
+
+                        export KUBECONFIG="${WORKSPACE}/.kube/config"
+
+                        # 1. Test direct connectivity (127.0.0.1:6443)
                         if kubectl cluster-info >/dev/null 2>&1; then
-                            echo "[+] Successfully connected to active Kubernetes cluster:"
+                            echo "[+] Successfully connected to Kubernetes cluster via local loopback:"
                             kubectl cluster-info
                         else
-                            echo "[!] Kubernetes cluster is not currently responding via kubectl."
+                            # 2. When Jenkins is in a Docker container, 127.0.0.1 points to the container itself.
+                            # Resolve host default gateway (typically 172.17.0.1) and reconfigure cluster endpoint.
+                            HOST_GATEWAY=$(ip route show default 2>/dev/null | awk '{print $3}')
+                            CONNECTED="false"
 
-                            if [ "${AUTO_BOOTSTRAP_K3S}" = "true" ] && [ -f /etc/os-release ] && grep -qiE "ubuntu|debian" /etc/os-release; then
-                                echo "[*] Auto-bootstrapping lightweight K3s cluster on Ubuntu VPS..."
-                                curl -sfL https://get.k3s.io | sh -
-                                
-                                export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-                                sudo chmod 644 /etc/rancher/k3s/k3s.yaml 2>/dev/null || true
-                                
-                                mkdir -p "${HOME}/.kube"
-                                sudo cp -f /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config" 2>/dev/null || true
-                                sudo chmod 644 "${HOME}/.kube/config" 2>/dev/null || true
+                            if [ -n "$HOST_GATEWAY" ] && [ -f "${WORKSPACE}/.kube/config" ]; then
+                                echo "[*] 127.0.0.1 refused. Attempting connection via host gateway (${HOST_GATEWAY}:6443)..."
+                                kubectl config set-cluster default --server="https://${HOST_GATEWAY}:6443" --insecure-skip-tls-verify=true >/dev/null 2>&1 || true
 
-                                sleep 6
-                                kubectl wait --for=condition=Ready node --all --timeout=60s || true
-                                echo "[+] K3s cluster ready!"
-                            else
-                                echo "ERROR: No accessible Kubernetes cluster found. Please verify kubeconfig or enable AUTO_BOOTSTRAP_K3S."
+                                if kubectl cluster-info >/dev/null 2>&1; then
+                                    echo "[+] Successfully connected to K3s cluster on host via ${HOST_GATEWAY}:6443!"
+                                    kubectl cluster-info
+                                    CONNECTED="true"
+                                fi
+                            fi
+
+                            if [ "$CONNECTED" != "true" ]; then
+                                echo "=========================================================="
+                                echo "ERROR: Could not connect to Kubernetes cluster via kubectl."
+                                echo "Please ensure K3s is active on the host VPS:"
+                                echo "  1. SSH into VPS: ssh ubuntu@<VPS_IP>"
+                                echo "  2. Check status: sudo systemctl status k3s"
+                                echo "  3. Start if stopped: sudo systemctl start k3s"
+                                echo "  4. Ensure config permissions: sudo chmod 644 /etc/rancher/k3s/k3s.yaml"
+                                echo "=========================================================="
                                 exit 1
                             fi
                         fi
@@ -210,16 +236,12 @@ pipeline {
                 script {
                     echo "[*] Step 1: Applying Namespace and ConfigMaps/Secrets..."
                     sh '''
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         kubectl apply -f "${K8S_DIR}/00-namespace.yaml"
                         kubectl apply -f "${K8S_DIR}/01-configmap-secrets.yaml"
                     '''
 
                     echo "[*] Step 2: Applying Data Layer (PostgreSQL, PgBouncer, Redis)..."
                     sh '''
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         kubectl apply -f "${K8S_DIR}/01b-postgres.yaml"
                         kubectl apply -f "${K8S_DIR}/02-pgbouncer.yaml"
                         kubectl apply -f "${K8S_DIR}/03-redis.yaml"
@@ -233,8 +255,6 @@ pipeline {
                 script {
                     echo "[*] Step 3: Deploying Backend & Frontend Workloads..."
                     sh """
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         kubectl apply -f "${env.K8S_DIR}/04-backend-deployment.yaml"
                         kubectl apply -f "${env.K8S_DIR}/05-frontend-deployment.yaml"
 
@@ -249,8 +269,6 @@ pipeline {
 
                     echo "[*] Step 4: Applying Ingress, HPA, and Scheduled Maintenance Jobs..."
                     sh """
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         kubectl apply -f "${env.K8S_DIR}/06-ingress.yaml"
                         kubectl apply -f "${env.K8S_DIR}/07-hpa.yaml"
                         kubectl apply -f "${env.K8S_DIR}/08-cronjob-db-backup.yaml"
@@ -266,8 +284,6 @@ pipeline {
                     if (params.TRIGGER_ROLLOUT_RESTART) {
                         echo "[*] Triggering rolling restart of microservices..."
                         sh """
-                            [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                             kubectl rollout restart deployment/tracelytag-backend -n "${env.NAMESPACE}"
                             kubectl rollout restart deployment/tracelytag-frontend -n "${env.NAMESPACE}"
                         """
@@ -275,8 +291,6 @@ pipeline {
 
                     echo "[*] Monitoring rollout status..."
                     sh """
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         echo "Waiting for backend deployment rollout to complete..."
                         kubectl rollout status deployment/tracelytag-backend -n "${env.NAMESPACE}" --timeout=180s
 
@@ -291,8 +305,6 @@ pipeline {
             steps {
                 script {
                     sh """
-                        [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                         echo "=========================================================="
                         echo "        OVH UBUNTU VPS DEPLOYMENT COMPLETED!             "
                         echo "=========================================================="
@@ -331,8 +343,6 @@ pipeline {
                 echo " [!] PIPELINE FAILED - INITIATING AUTOMATED ROLLBACK & LOG CAPTURE"
                 echo "=================================================================="
                 sh """
-                    [ -f /etc/rancher/k3s/k3s.yaml ] && export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
                     echo "Attempting automated deployment rollback..."
                     kubectl rollout undo deployment/tracelytag-backend -n "${env.NAMESPACE}" || true
                     kubectl rollout undo deployment/tracelytag-frontend -n "${env.NAMESPACE}" || true

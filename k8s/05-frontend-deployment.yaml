@@ -56,9 +56,12 @@ metadata:
     app: tracelytag-frontend
 spec:
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 80
       name: http
+    - port: 8080
+      targetPort: 80
+      name: http-alt
   selector:
     app: tracelytag-frontend
   type: LoadBalancer

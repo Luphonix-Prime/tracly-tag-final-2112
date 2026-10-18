@@ -15,14 +15,25 @@ metadata:
     # Enable gzip compression
     nginx.ingress.kubernetes.io/enable-real-ip: "true"
 spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - "tracelytag.com"
-        - "*.tracelytag.com"
-      secretName: tracelytag-tls-wildcard
   rules:
-    # 1. Main Application & Wildcard Subdomains for Multi-Tenant Branding
+    # 1. Direct VPS IP Access (e.g. visiting http://<VPS_IP>/ in browser)
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: tracelytag-backend-svc
+                port:
+                  number: 3000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tracelytag-frontend-svc
+                port:
+                  number: 80
+    # 2. Main Application & Wildcard Subdomains for Multi-Tenant Branding
     - host: app.tracelytag.com
       http:
         paths:

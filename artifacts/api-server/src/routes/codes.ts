@@ -244,9 +244,16 @@ router.get("/codes/check/:serial", async (req, res): Promise<void> => {
           const matches = await db
             .select({ id: codesTable.id })
             .from(codesTable)
-            .where(eq(codesTable.serialNumber, potentialSerial))
+            .where(
+              or(
+                eq(codesTable.serialNumber, potentialSerial),
+                eq(codesTable.ssccCode, potentialSerial)
+              )
+            )
             .limit(1);
           if (matches.length > 0) {
+            searchSerial = potentialSerial;
+          } else {
             searchSerial = potentialSerial;
           }
         }
@@ -401,7 +408,7 @@ router.get("/codes/public/:serial", async (req, res): Promise<void> => {
       searchSerial = parts[parts.length - 1] || searchSerial;
     }
 
-    // Extract actual serial/SSCC from new format: <gst/gtin>-<expiry>-<batch>-<serial>
+    // Extract actual serial/SSCC from new format: <gst/gtin>-<batch>-<mfg>-<expiry>-<serial>
     if (searchSerial.includes("-")) {
       const parts = searchSerial.split("-");
       if (parts.length >= 4) {
@@ -410,11 +417,18 @@ router.get("/codes/public/:serial", async (req, res): Promise<void> => {
           const matches = await db
             .select({ id: codesTable.id })
             .from(codesTable)
-            .where(eq(codesTable.serialNumber, potentialSerial))
+            .where(
+              or(
+                eq(codesTable.serialNumber, potentialSerial),
+                eq(codesTable.ssccCode, potentialSerial)
+              )
+            )
             .limit(1);
           if (matches.length > 0) {
             searchSerial = potentialSerial;
             console.log(`[Public Verify] Normalized dash-separated URL to serial: "${searchSerial}"`);
+          } else {
+            searchSerial = potentialSerial;
           }
         }
       }

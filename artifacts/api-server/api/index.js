@@ -68769,8 +68769,15 @@ router8.get("/codes/check/:serial", async (req, res) => {
       if (parts.length >= 4) {
         const potentialSerial = parts[parts.length - 1];
         if (potentialSerial && potentialSerial.length >= 6 && !potentialSerial.includes(" ")) {
-          const matches = await db.select({ id: codesTable.id }).from(codesTable).where(eq(codesTable.serialNumber, potentialSerial)).limit(1);
+          const matches = await db.select({ id: codesTable.id }).from(codesTable).where(
+            or(
+              eq(codesTable.serialNumber, potentialSerial),
+              eq(codesTable.ssccCode, potentialSerial)
+            )
+          ).limit(1);
           if (matches.length > 0) {
+            searchSerial = potentialSerial;
+          } else {
             searchSerial = potentialSerial;
           }
         }
@@ -68892,10 +68899,17 @@ router8.get("/codes/public/:serial", async (req, res) => {
       if (parts.length >= 4) {
         const potentialSerial = parts[parts.length - 1];
         if (potentialSerial && potentialSerial.length >= 6 && !potentialSerial.includes(" ")) {
-          const matches = await db.select({ id: codesTable.id }).from(codesTable).where(eq(codesTable.serialNumber, potentialSerial)).limit(1);
+          const matches = await db.select({ id: codesTable.id }).from(codesTable).where(
+            or(
+              eq(codesTable.serialNumber, potentialSerial),
+              eq(codesTable.ssccCode, potentialSerial)
+            )
+          ).limit(1);
           if (matches.length > 0) {
             searchSerial = potentialSerial;
             console.log(`[Public Verify] Normalized dash-separated URL to serial: "${searchSerial}"`);
+          } else {
+            searchSerial = potentialSerial;
           }
         }
       }

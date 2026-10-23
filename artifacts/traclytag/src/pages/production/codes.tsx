@@ -257,6 +257,55 @@ function parseGs1Raw(raw: string) {
   return { gtin, serial, batch, expiry, mfg };
 }
 
+function formatCustomDate(inputDate?: string | Date | null, fallbackDate?: string | Date | null): string {
+  const d = inputDate || fallbackDate;
+  if (!d) return "";
+
+  const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+  // 1. If it's a 6-digit GS1 date string YYMMDD (e.g. "271231" or "210116")
+  if (typeof d === "string" && /^\d{6}$/.test(d.trim())) {
+    const trimmed = d.trim();
+    const yy = trimmed.substring(0, 2);
+    const mm = parseInt(trimmed.substring(2, 4), 10);
+    const dd = trimmed.substring(4, 6);
+    if (mm >= 1 && mm <= 12) {
+      const mmm = monthNames[mm - 1];
+      return `${dd}-${mmm}-${yy}`;
+    }
+  }
+
+  // 2. If it's already in DD-MMM-YY format (e.g. "16-JAN-21")
+  if (typeof d === "string" && /^\d{2}-[A-Za-z]{3}-\d{2}$/.test(d.trim())) {
+    return d.trim().toUpperCase();
+  }
+
+  // 3. If it's an ISO string YYYY-MM-DD or full date
+  if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}/.test(d.trim())) {
+    const parts = d.trim().split("T")[0].split("-");
+    const yyyy = parts[0];
+    const mm = parseInt(parts[1], 10);
+    const dd = parts[2];
+    if (mm >= 1 && mm <= 12) {
+      const mmm = monthNames[mm - 1];
+      const yy = yyyy.slice(-2);
+      return `${dd}-${mmm}-${yy}`;
+    }
+  }
+
+  // 4. Fallback Date object parsing
+  try {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    if (!isNaN(dateObj.getTime())) {
+      return format(dateObj, "dd-MMM-yy").toUpperCase();
+    }
+  } catch {
+    // ignore
+  }
+
+  return "";
+}
+
 const getCustomFormattedCodeLink = (code: any) => {
   const raw = code.rawString || "";
   const parsed = parseGs1Raw(raw);
@@ -267,47 +316,27 @@ const getCustomFormattedCodeLink = (code: any) => {
   // 2. Batch No
   const batchNo = parsed.batch || code.batchNumber || "BN-2026-OCT-01";
 
-  // 3. Manufacturing Year (4 digits)
-  let mfgYear = "";
-  if (parsed.mfg && parsed.mfg.length >= 2) {
-    mfgYear = `20${parsed.mfg.substring(0, 2)}`;
-  } else if (code.mfgDate) {
-    try {
-      mfgYear = format(new Date(code.mfgDate), "yyyy");
-    } catch {
-      mfgYear = "2026";
-    }
-  } else if (code.createdAt) {
-    try {
-      mfgYear = format(new Date(code.createdAt), "yyyy");
-    } catch {
-      mfgYear = "2026";
-    }
-  } else {
-    mfgYear = "2026";
+  // 3. Manufacturing Date (DD-MMM-YY, e.g. 16-JAN-21 or 15-APR-26 matching 2nd img)
+  let mfgDate = formatCustomDate(parsed.mfg, code.mfgDate || code.createdAt);
+  if (!mfgDate) {
+    mfgDate = format(new Date(), "dd-MMM-yy").toUpperCase();
   }
 
-  // 4. Expiry Year (4 digits)
-  let expYear = "";
-  if (parsed.expiry && parsed.expiry.length >= 2) {
-    expYear = `20${parsed.expiry.substring(0, 2)}`;
-  } else if (code.expiryDate) {
-    try {
-      expYear = format(new Date(code.expiryDate), "yyyy");
-    } catch {
-      expYear = "2028";
-    }
-  } else {
-    expYear = "2028";
+  // 4. Expiry Date (DD-MMM-YY, e.g. 15-JAN-22 or 31-DEC-27 matching 2nd img)
+  let expDate = formatCustomDate(parsed.expiry, code.expiryDate);
+  if (!expDate) {
+    const fallbackExp = new Date();
+    fallbackExp.setFullYear(fallbackExp.getFullYear() + 2);
+    expDate = format(fallbackExp, "dd-MMM-yy").toUpperCase();
   }
 
   // 5. Serial No
   const serialNo = parsed.serial || code.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "5491794546E0");
 
-  // If batchNo itself contains hyphens (e.g., BN-2026-oct-12), using hyphen-delimited 5-part string breaks into unexpected number of parts.
+  // If batchNo itself contains hyphens (e.g., BN-2026-oct-12), using hyphen-delimited string breaks into unexpected number of parts.
   // We sanitize hyphenated components or fallback to clean serialNo for single-part representation.
   const cleanBatch = batchNo.replace(/-/g, "");
-  return `${gstNo}-${cleanBatch}-${mfgYear}-${expYear}-${serialNo}`;
+  return `${gstNo}-${cleanBatch}-${mfgDate}-${expDate}-${serialNo}`;
 };
 
 const getProductString = (
@@ -315,7 +344,8 @@ const getProductString = (
   companyGstin?: string, 
   fallbackBatch?: string, 
   fallbackSerial?: string, 
-  fallbackExpiry?: string
+  fallbackExpiry?: string,
+  fallbackMfg?: string
 ) => {
   const parsed = parseGs1Raw(raw);
   if (parsed.sscc) {
@@ -327,17 +357,10 @@ const getProductString = (
   const serialNum = parsed.serial || fallbackSerial || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "102DE11E894C");
   const batchNum = parsed.batch || fallbackBatch || "";
   
-  let expiryDateStr = parsed.expiry || "";
-  if (!expiryDateStr && fallbackExpiry) {
-    try {
-      expiryDateStr = format(new Date(fallbackExpiry), "yyMMdd");
-    } catch {
-      expiryDateStr = "";
-    }
-  }
-  const expiryYear = expiryDateStr && expiryDateStr.length >= 2 ? `20${expiryDateStr.substring(0, 2)}` : "";
+  const mfgFormatted = formatCustomDate(parsed.mfg, fallbackMfg);
+  const expFormatted = formatCustomDate(parsed.expiry, fallbackExpiry);
 
-  return `(01)${displayGtin}${batchNum ? `-(10)${batchNum}` : ""}${expiryYear ? `-(17)${expiryYear}` : ""}-(21)${serialNum}`;
+  return `(01)${displayGtin}${batchNum ? `-(10)${batchNum}` : ""}${mfgFormatted ? `-(11)${mfgFormatted}` : ""}${expFormatted ? `-(17)${expFormatted}` : ""}-(21)${serialNum}`;
 };
 
 const renderGs1Text = (codeObj: any, onCopy: () => void) => {
@@ -361,17 +384,19 @@ const renderGs1Text = (codeObj: any, onCopy: () => void) => {
   const serialNum = parsed.serial || codeObj.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "AC22F9A7C436");
   const batchNum = parsed.batch || codeObj.batchNumber || "";
 
-  let expiryDateStr = parsed.expiry || "";
-  if (!expiryDateStr && codeObj.expiryDate) {
+  let expiryDateRaw = parsed.expiry || "";
+  if (!expiryDateRaw && codeObj.expiryDate) {
     try {
-      expiryDateStr = format(new Date(codeObj.expiryDate), "yyMMdd");
+      expiryDateRaw = format(new Date(codeObj.expiryDate), "yyMMdd");
     } catch {
-      expiryDateStr = "";
+      expiryDateRaw = "";
     }
   }
-  const expiryYear = expiryDateStr && expiryDateStr.length >= 2 ? `20${expiryDateStr.substring(0, 2)}` : "";
 
-  const productString = `(01)${displayGtin}-${batchNum ? `(10)${batchNum}-` : ""}${expiryYear ? `(17)${expiryYear}-` : ""}(21)${serialNum}`;
+  const mfgFormatted = formatCustomDate(parsed.mfg, codeObj.mfgDate || codeObj.createdAt);
+  const expFormatted = formatCustomDate(parsed.expiry, codeObj.expiryDate);
+
+  const productString = `(01)${displayGtin}-${batchNum ? `(10)${batchNum}-` : ""}${mfgFormatted ? `(11)${mfgFormatted}-` : ""}${expFormatted ? `(17)${expFormatted}-` : ""}(21)${serialNum}`;
 
   return (
     <div className="text-[11px] font-mono text-slate-900 text-left space-y-0.5 w-full leading-tight">
@@ -389,7 +414,7 @@ const renderGs1Text = (codeObj: any, onCopy: () => void) => {
       </div>
       {serialNum && <div className="font-bold">(21){serialNum}</div>}
       {batchNum && <div className="font-bold">(10){batchNum}</div>}
-      {expiryDateStr && <div className="font-bold">(17){expiryDateStr}</div>}
+      {expiryDateRaw && <div className="font-bold">(17){expiryDateRaw}</div>}
 
       {/* Horizontal divider line & Product string */}
       <div className="border-t border-slate-200/80 my-1.5 pt-1.5 text-[10px] text-slate-600 font-mono break-all leading-normal">

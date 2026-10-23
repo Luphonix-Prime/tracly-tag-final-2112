@@ -15,6 +15,8 @@ pipeline {
         booleanParam(name: 'PUSH_TO_DOCKER_HUB', defaultValue: true, description: 'Push built images to Docker Hub')
         booleanParam(name: 'AUTO_BOOTSTRAP_K3S', defaultValue: true, description: 'Auto-install lightweight K3s cluster on VPS if not detected')
         booleanParam(name: 'TRIGGER_ROLLOUT_RESTART', defaultValue: true, description: 'Enforce zero-downtime rolling restart of microservices')
+        booleanParam(name: 'PURGE_AND_RESET_ALL', defaultValue: false, description: 'Wipe all existing K8s pods, delete old Docker images and build caches before deploying')
+        booleanParam(name: 'NO_CACHE', defaultValue: true, description: 'Build Docker images with --no-cache to guarantee fresh code')
     }
 
     environment {
@@ -46,6 +48,8 @@ pipeline {
                     echo "  Backend Image:     ${env.BACKEND_IMAGE}"
                     echo "  Frontend Image:    ${env.FRONTEND_IMAGE}"
                     echo "  Target Namespace:  ${env.NAMESPACE}"
+                    echo "  Purge & Reset All: ${params.PURGE_AND_RESET_ALL}"
+                    echo "  No Cache Build:    ${params.NO_CACHE}"
                     echo "----------------------------------------------------------"
 
                     sh '''
@@ -92,12 +96,30 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 script {
-                    try {
-                        checkout scm
-                    } catch (Exception e) {
-                        echo "Standard SCM checkout skipped or failed, using repository clone fallback: ${e.message}"
-                        git branch: 'dockerize', url: 'https://github.com/Luphonix-Prime/tracly-tag-final.git'
-                    }
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Purge & Reset Existing Deployments') {
+            when {
+                expression { return params.PURGE_AND_RESET_ALL }
+            }
+            steps {
+                script {
+                    echo "[!] RESET TRIGGERED: Purging previous workloads and build caches..."
+                    sh '''
+                        export KUBECONFIG="${WORKSPACE}/.kube/config"
+
+                        echo "[*] Deleting previous deployments in namespace ${NAMESPACE}..."
+                        kubectl delete deployment --all -n "${NAMESPACE}" --timeout=60s || true
+                        kubectl delete statefulset --all -n "${NAMESPACE}" --timeout=60s || true
+                        kubectl delete pod --all -n "${NAMESPACE}" --force --grace-period=0 || true
+
+                        echo "[*] Purging unused Docker build cache & dangling images..."
+                        docker image prune -af || true
+                        docker builder prune -af || true
+                    '''
                 }
             }
         }
@@ -173,8 +195,9 @@ pipeline {
                     steps {
                         script {
                             echo "Building Backend Container: ${env.BACKEND_IMAGE}"
+                            def noCacheArg = params.NO_CACHE ? '--no-cache' : ''
                             sh """
-                                docker build \
+                                docker build ${noCacheArg} \
                                     -f Dockerfile.backend \
                                     -t ${env.BACKEND_IMAGE} \
                                     -t ${env.BACKEND_IMAGE_LATEST} .
@@ -186,8 +209,9 @@ pipeline {
                     steps {
                         script {
                             echo "Building Frontend Container: ${env.FRONTEND_IMAGE}"
+                            def noCacheArg = params.NO_CACHE ? '--no-cache' : ''
                             sh """
-                                docker build \
+                                docker build ${noCacheArg} \
                                     -f Dockerfile.frontend \
                                     -t ${env.FRONTEND_IMAGE} \
                                     -t ${env.FRONTEND_IMAGE_LATEST} .

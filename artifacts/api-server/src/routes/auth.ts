@@ -17,14 +17,28 @@ router.post("/auth/register", async (req, res): Promise<void> => {
 
   const { username, email, password, phone, companyName, companyEmail, companyWebsiteUrl } = parsed.data;
 
-  // Verify if username already exists
+  if (!phone || !phone.trim()) {
+    res.status(400).json({ error: "Phone number is required" });
+    return;
+  }
+
+  // Verify if username or email already exists
   const [existingUser] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.username, username));
+    .where(
+      or(
+        sql`lower(${usersTable.username}) = ${username.trim().toLowerCase()}`,
+        sql`lower(${usersTable.email}) = ${email.trim().toLowerCase()}`
+      )
+    );
 
   if (existingUser) {
-    res.status(400).json({ error: "Username already exists" });
+    if (existingUser.username.toLowerCase() === username.trim().toLowerCase()) {
+      res.status(400).json({ error: "Username already exists" });
+      return;
+    }
+    res.status(400).json({ error: "Email already exists" });
     return;
   }
 

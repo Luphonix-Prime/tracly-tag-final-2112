@@ -9,7 +9,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { 
   QrCode, Loader2, MapPin, Mail, Lock, User, Phone, 
   Building2, Globe, Fingerprint, Laptop, X, Check, 
-  ExternalLink, RefreshCw, Terminal, TerminalSquare, ShieldAlert
+  ExternalLink, RefreshCw, Terminal, TerminalSquare, ShieldAlert,
+  Eye, EyeOff
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -52,6 +53,8 @@ export default function Login() {
   const { hideDevOptions, hideSsoOptions } = useDevOptionsVisibility();
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
 
   // --- Passkey States ---
   const [isPasskeySimulatorOpen, setIsPasskeySimulatorOpen] = useState(false);
@@ -879,15 +882,27 @@ export default function Login() {
                                   Forgot Password?
                                 </a>
                               </div>
-                              <div className="relative flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-12 gap-3 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
+                              <div className="relative flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-3 gap-2 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
                                 <FormControl>
                                   <Input 
-                                    type="password" 
+                                    type={showPassword ? "text" : "password"} 
                                     placeholder="••••••••••••" 
-                                    className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide w-full h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
+                                    className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide flex-1 h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
                                     {...field} 
                                   />
                                 </FormControl>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword((prev) => !prev)}
+                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer shrink-0 focus:outline-none flex items-center justify-center"
+                                  title={showPassword ? "Hide password" : "Show password"}
+                                >
+                                  {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </button>
                               </div>
                               <FormMessage className="ml-1 text-[10px]" />
                             </FormItem>
@@ -1032,15 +1047,27 @@ export default function Login() {
                                   <span className="material-symbols-outlined text-[14px]">lock</span>
                                   Password
                                 </FormLabel>
-                                <div className="flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-2 gap-3 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
+                                <div className="relative flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-3 gap-2 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
                                   <FormControl>
                                     <Input 
-                                      type="password" 
+                                      type={showSignUpPassword ? "text" : "password"} 
                                       placeholder="Minimum 6 characters" 
-                                      className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide w-full h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
+                                      className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide flex-1 h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
                                       {...field} 
                                     />
                                   </FormControl>
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowSignUpPassword((prev) => !prev)}
+                                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer shrink-0 focus:outline-none flex items-center justify-center"
+                                    title={showSignUpPassword ? "Hide password" : "Show password"}
+                                  >
+                                    {showSignUpPassword ? (
+                                      <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                      <Eye className="h-4 w-4" />
+                                    )}
+                                  </button>
                                 </div>
                                 <FormMessage className="ml-1 text-[10px]" />
                               </FormItem>

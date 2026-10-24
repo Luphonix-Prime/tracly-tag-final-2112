@@ -967,7 +967,7 @@ export default function Login() {
                             onClick={() => setAuthMode("signup")}
                             className="font-body-sm text-xs text-slate-500 dark:text-slate-400 hover:text-midnight-navy dark:hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
                           >
-                            Need access? <span className="text-safety-blue font-bold"></span>
+                            Need access? <span className="text-safety-blue font-bold">Create account</span>
                           </button>
                         </div>
                       </form>

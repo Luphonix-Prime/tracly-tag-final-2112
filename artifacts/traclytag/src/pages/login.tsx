@@ -29,7 +29,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useDevOptionsVisibility } from "@/hooks/use-dev-options-visibility";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "Username or email is required"),
   password: z.string().min(1, "Password is required"),
   location: z.string().optional(),
 });
@@ -415,7 +415,7 @@ export default function Login() {
 
   function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     const loginData = {
-      username: values.username,
+      username: values.username.trim(),
       password: values.password,
     };
     loginMutation.mutate({ data: loginData }, {
@@ -439,7 +439,7 @@ export default function Login() {
         handleRedirect();
       },
       onError: (error: any) => {
-        toast.error(error?.data?.error || "Invalid username or password");
+        toast.error(error?.data?.error || "Invalid username/email or password");
       }
     });
   }
@@ -951,7 +951,7 @@ export default function Login() {
                               <div className="flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-2 gap-3 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
                                 <FormControl>
                                   <Input 
-                                    placeholder="sys_admin_01" 
+                                    placeholder="sys_admin_01 or admin@tracelytag.com" 
                                     className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide w-full h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
                                     {...field} 
                                   />

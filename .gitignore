@@ -65,3 +65,4 @@ terminal_logs/*
 old-dev-built.txt
 docker-strt.bat
 new-task.md
+graphify-out/cache/

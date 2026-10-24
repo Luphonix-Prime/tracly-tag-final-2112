@@ -624,14 +624,14 @@
     "semantic_hash": "651d7cf051322ef2424883209eeb1e80"
   },
   "artifacts/traclytag/src/App.tsx": {
-    "mtime": 1789748160.1518629,
-    "seen": 1792824978.6447756,
+    "mtime": 1792827073.71756,
+    "seen": 1792827196.5273287,
     "ast_hash": "0658f7a236fef6cd1f4ad23bae692e46",
     "semantic_hash": "0658f7a236fef6cd1f4ad23bae692e46"
   },
   "artifacts/traclytag/src/components/BrandedPortal.tsx": {
-    "mtime": 1782456834.0581543,
-    "seen": 1792824978.644776,
+    "mtime": 1792827073.7170224,
+    "seen": 1792827196.5273318,
     "ast_hash": "5fa33a111f49c36a4a008a19beb73768",
     "semantic_hash": "5fa33a111f49c36a4a008a19beb73768"
   },
@@ -1122,8 +1122,8 @@
     "semantic_hash": "626e37045a2128d9035ee71dca77885a"
   },
   "artifacts/traclytag/src/pages/mapping-code.tsx": {
-    "mtime": 1792772993.0056343,
-    "seen": 1792824978.6448338,
+    "mtime": 1792827073.7164726,
+    "seen": 1792827196.5405943,
     "ast_hash": "baeb2797514bfde5732e2995a10b12b0",
     "semantic_hash": "baeb2797514bfde5732e2995a10b12b0"
   },
@@ -1164,9 +1164,9 @@
     "semantic_hash": "daa8e1e9c0589d5a4bcd0b8c555f5fec"
   },
   "artifacts/traclytag/src/pages/production/codes.tsx": {
-    "mtime": 1792826136.5154767,
-    "seen": 1792826222.5066946,
-    "ast_hash": "094a5b9832fa045f34b41b8dffbb4c22",
+    "mtime": 1792827164.8086278,
+    "seen": 1792827196.5413384,
+    "ast_hash": "05002df3052719f44594f9ac2c8bd5fa",
     "semantic_hash": ""
   },
   "artifacts/traclytag/src/pages/production/generate-codes.tsx": {
@@ -2348,13 +2348,13 @@
   "artifacts/traclytag/src/assets/india_states.json": {
     "mtime": 1786289347.8621168,
     "seen": 1792826471.482737,
-    "ast_hash": "3a1f1d135a5e58c8c15ff45b564ba46a",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "lib/db/drizzle/0000_typical_the_fallen.sql": {
     "mtime": 1791611872.6251204,
     "seen": 1792826471.482909,
-    "ast_hash": "d197a0aea647f50e11bb52e6f4c10298",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "graphify.md": {

@@ -1,16 +1,16 @@
 # Graph Report - tracly-tag-final  (2026-10-24)
 
 ## Corpus Check
-- 346 files · ~440,394 words
+- 347 files · ~440,664 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4993 nodes · 9891 edges · 368 communities (223 shown, 145 thin omitted)
+- 4995 nodes · 9892 edges · 379 communities (233 shown, 146 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 556 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e1521659`
+- Built from commit: `47e42ee7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,25 +19,25 @@
 - cn
 - api-client-react/src/generated/api.ts
 - cn
-- AppLayout.tsx
-- "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/utf32.js"
+- traclytag/src/App.tsx
+- push
 - parse
 - products.tsx
 - toString
-- traclytag/src/App.tsx
+- new-batch.tsx
 - call
 - api-zod/src/generated/api.ts
-- "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/response.js"
+- toUpperCase
 - toLowerCase
 - routes/index.ts
 - pino2
 - emit
 - "../../node_modules/.pnpm/send@1.2.1/node_modules/send/index.js"
-- done
-- mockup-sandbox/src/components/ui/sidebar.tsx
 - split
+- mockup-sandbox/src/components/ui/sidebar.tsx
+- "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/mediaType.js"
 - debug
-- push
+- join
 - mockup-sandbox/src/components/ui/carousel.tsx
 - "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/levels.js"
 - api.schemas.ts
@@ -50,8 +50,8 @@
 - pino-pretty.js
 - "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/buffer_list.js"
 - customFetch
-- "../../node_modules/.pnpm/router@2.2.0/node_modules/router/index.js"
-- with
+- done
+- update
 - reports.ts
 - write
 - "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"
@@ -72,7 +72,7 @@
 - compilerOptions
 - session2
 - multistream
-- update
+- "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/crypto/sasl.js"
 - "../../node_modules/.pnpm/fast-copy@4.0.3/node_modules/fast-copy/dist/cjs/index.cjs"
 - dependencies
 - types/index.ts
@@ -81,7 +81,7 @@
 - flushSync
 - "../../node_modules/.pnpm/safe-stable-stringify@2.5.0/node_modules/safe-stable-stringify/index.js"
 - "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"
-- Codes
+- codes.tsx
 - "../../node_modules/.pnpm/depd@2.0.0/node_modules/depd/index.js"
 - mockup-sandbox/src/components/ui/item.tsx
 - urlencoded
@@ -94,24 +94,24 @@
 - mockupPreviewPlugin
 - "../../node_modules/.pnpm/@pinojs+redact@0.4.0/node_modules/@pinojs/redact/index.js"
 - "../../node_modules/.pnpm/@pinojs+redact@0.4.0/node_modules/@pinojs/redact/index.js"
-- db-reset.ts
+- auth.ts
 - mockup-sandbox/src/components/ui/command.tsx
 - traclytag/components.json
-- "../../node_modules/.pnpm/string_decoder@1.3.0/node_modules/string_decoder/lib/string_decoder.js"
-- "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/errors.js"
+- destroy
+- "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js"
 - indexOf
 - scripts/package.json
 - CodeLevel
 - "../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js"
-- push
+- "../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"
 - getPropertyValue
-- "../../node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr/index.js"
-- app.ts
+- "../../node_modules/.pnpm/concat-stream@2.0.0/node_modules/concat-stream/index.js"
+- db-reset.ts
 - mockup-sandbox/src/App.tsx
 - compilerOptions
 - traclytag/src/components/ui/carousel.tsx
 - "../../node_modules/.pnpm/content-disposition@1.1.0/node_modules/content-disposition/index.js"
-- dashboard.tsx
+- serialize
 - includes
 - push
 - api-server/package.json
@@ -133,7 +133,7 @@
 - TracelyTag — OVH Ubuntu VPS & Jenkins Deployment Guide
 - traclytag/src/components/ui/chart.tsx
 - traclytag/src/components/ui/input-group.tsx
-- "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js"
+- "../../node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr/index.js"
 - 2. Threat Vector Breakdown & CVE/CWE Alignment
 - "../../node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js"
 - What You Must Do When Invoked
@@ -144,7 +144,7 @@
 - "../../node_modules/.pnpm/on-headers@1.1.0/node_modules/on-headers/index.js"
 - getNodejsStreamFuncs
 - hierarchical-date-picker.tsx
-- "../../node_modules/.pnpm/fast-safe-stringify@2.1.1/node_modules/fast-safe-stringify/index.js"
+- push
 - thread-stream-worker.js
 - 4. Mobile APK Compilation & Integration Guide
 - compilerOptions
@@ -156,12 +156,12 @@
 - mockup-sandbox/src/components/ui/drawer.tsx
 - mockup-sandbox/src/components/ui/empty.tsx
 - mockup-sandbox/src/components/ui/navigation-menu.tsx
-- endsWith
+- status
 - "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/proto.js"
 - "../../node_modules/.pnpm/range-parser@1.2.1/node_modules/range-parser/index.js"
 - makeConstructor
 - "../../node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js"
-- demo.tsx
+- "../../node_modules/.pnpm/content-type@1.0.5/node_modules/content-type/index.js"
 - getGetMarkedByLogQueryOptions
 - new-resetting-doc.md
 - get
@@ -170,8 +170,8 @@
 - "../../node_modules/.pnpm/once@1.4.0/node_modules/once/once.js"
 - done
 - done
-- "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/lib/streams.js"
-- ssoRequests.ts
+- "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/browser.js"
+- createDebug
 - README.md
 - mockup-sandbox/src/components/ui/alert.tsx
 - getHealthCheckQueryOptions
@@ -183,7 +183,7 @@
 - build.mjs
 - mockup-sandbox/src/components/ui/badge.tsx
 - getDashboardSummary
-- "../../node_modules/.pnpm/quick-format-unescaped@4.0.4/node_modules/quick-format-unescaped/index.js"
+- "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/language.js"
 - getGetMyCompanyQueryOptions
 - getGetPalletSummaryQueryOptions
 - getGetShipperSummaryQueryOptions
@@ -195,7 +195,7 @@
 - "../../node_modules/.pnpm/safe-buffer@5.2.1/node_modules/safe-buffer/index.js"
 - "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/node.js"
 - api-server/vercel.json
-- createUser
+- formatTime
 - date-fns
 - embla-carousel-react
 - framer-motion
@@ -243,7 +243,7 @@
 - 2. Inspect TracelyTag Application Tables
 - GS1 Serialization Engine
 - deleteBatch
-- deleteLocation
+- "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js"
 - deleteProduct
 - getListCodesQueryOptions
 - Authentication UI and Login Flows
@@ -290,24 +290,30 @@
 - TraclyTag Overview
 - Mockup Sandbox
 - graphify reference: query, path, explain
-- "../../node_modules/.pnpm/once@1.4.0/node_modules/once/once.js"
+- setup
 - scripts
 - new-k8.md
 - What Was Created & Configured
 - Graphify Smart Knowledge Graph Rules
 - traclytag/vite.config.ts
+- "../../node_modules/.pnpm/router@2.2.0/node_modules/router/lib/layer.js"
 - new-webhooking.md
 - Part 1: Fix Jenkins Plugin Dependencies (2 Minutes)
 - graphify reference: add a URL and watch a folder
 - graphify reference: commit hook and native CLAUDE.md integration
 - graphify reference: incremental update and cluster-only
+- traclytag/src/components/ui/toggle-group.tsx
+- "../../node_modules/.pnpm/pg-connection-string@2.14.1/node_modules/pg-connection-string/index.js"
 - @hookform/resolvers
+- "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/dbcs-codec.js"
 - new-k8s.md
 - graphify reference: GitHub clone and cross-repo merge
 - graphify reference: transcribe video and audio
+- "../../node_modules/.pnpm/pg-types@2.2.0/node_modules/pg-types/index.js"
 - new-plan.md
 - extraction-spec.md
 - workflows/graphify.md
+- graphify.md
 - drizzle-orm
 - pino-http
 - tsx
@@ -356,6 +362,7 @@
 - @types/react-dom
 - vaul
 - vite
+- "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/memory.js"
 - zod
 - clsx
 - cmdk
@@ -377,6 +384,10 @@
 - vite
 - @workspace/api-client-react
 - wouter
+- "../../node_modules/.pnpm/setprototypeof@1.2.0/node_modules/setprototypeof/index.js"
+- login
+- logout
+- register
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 288 edges
@@ -392,28 +403,28 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` --indirect_call--> `register()`  [INFERRED]
-  artifacts/api-server/api/index.js → lib/api-client-react/src/generated/api.ts
-- `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` --indirect_call--> `register()`  [INFERRED]
   artifacts/api-server/api/pino-worker.js → lib/api-client-react/src/generated/api.ts
 - `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` --indirect_call--> `register()`  [INFERRED]
   artifacts/api-server/api/pino-file.js → lib/api-client-react/src/generated/api.ts
 - `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` --indirect_call--> `register()`  [INFERRED]
   artifacts/api-server/api/pino-pretty.js → lib/api-client-react/src/generated/api.ts
+- `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` --indirect_call--> `register()`  [INFERRED]
+  artifacts/api-server/api/index.js → lib/api-client-react/src/generated/api.ts
 - `AppLayout()` --calls--> `customFetch()`  [EXTRACTED]
   artifacts/traclytag/src/components/layout/AppLayout.tsx → lib/api-client-react/src/custom-fetch.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (368 total, 145 thin omitted)
+## Communities (379 total, 146 thin omitted)
 
 ### Community 0 - "index.js"
 Cohesion: 0.01
-Nodes (40): ./get, bytesToFloat64(), construct(), createMany(), createOne(), createTableRelationsHelpers(), deepPartial(), deepPartialify() (+32 more)
+Nodes (42): args(), bytesToFloat64(), construct(), createMany(), createOne(), createTableRelationsHelpers(), createZodEnum(), deepPartial() (+34 more)
 
 ### Community 1 - "cn"
 Cohesion: 0.02
-Nodes (172): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescription, AlertTitle, alertVariants, AlertDialogOverlay (+164 more)
+Nodes (168): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescription, AlertTitle, alertVariants, AlertDialogOverlay (+160 more)
 
 ### Community 2 - "api-client-react/src/generated/api.ts"
 Cohesion: 0.02
@@ -423,81 +434,81 @@ Nodes (92): Awaited, AwaitedInput, CreateBatchMutationBody, CreateBatchMutationE
 Cohesion: 0.04
 Nodes (69): AccordionContent, AccordionItem, AccordionTrigger, Avatar, AvatarFallback, AvatarImage, Breadcrumb, BreadcrumbEllipsis() (+61 more)
 
-### Community 4 - "AppLayout.tsx"
-Cohesion: 0.07
-Nodes (44): AppLayout(), ThemeToggle(), Avatar, AvatarFallback, AvatarImage, Card, CardContent, CardDescription (+36 more)
+### Community 4 - "traclytag/src/App.tsx"
+Cohesion: 0.06
+Nodes (57): App(), isCustomDomain(), ProtectedRoute(), queryClient, Router(), BrandedPortal(), AppLayout(), ThemeToggle() (+49 more)
 
-### Community 5 - ""../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/utf32.js""
-Cohesion: 0.12
-Nodes (4): "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/utf16.js"(), detectEncoding(), "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/utf32.js"(), detectEncoding()
+### Community 5 - "push"
+Cohesion: 0.05
+Nodes (30): addSetOperators(), createSetOperator(), dirty(), errors(), haveSameKeys(), mergeArray(), mergeObjectAsync(), mergeObjectSync() (+22 more)
 
 ### Community 6 - "parse"
 Cohesion: 0.04
-Nodes (68): addIssueToContext(), assertNever(), catch(), datetimeRegex(), delete(), dirty(), finally(), _getCached() (+60 more)
+Nodes (64): addIssueToContext(), assertNever(), brand(), catch(), create(), datetimeRegex(), default(), delete() (+56 more)
 
 ### Community 7 - "products.tsx"
 Cohesion: 0.12
-Nodes (53): DateRange, DateRangeFilter(), DateRangeFilterProps, PageHeader(), PageHeaderProps, AlertDialogAction, AlertDialogCancel, AlertDialogContent (+45 more)
+Nodes (49): DateRange, DateRangeFilter(), DateRangeFilterProps, PageHeader(), PageHeaderProps, AlertDialogAction, AlertDialogCancel, AlertDialogContent (+41 more)
 
 ### Community 8 - "toString"
-Cohesion: 0.04
-Nodes (54): _addCheck(), base64(), base64url(), cidr(), cuid(), cuid2(), dateRangeConds(), datetime() (+46 more)
-
-### Community 9 - "traclytag/src/App.tsx"
 Cohesion: 0.05
-Nodes (89): App(), isCustomDomain(), ProtectedRoute(), queryClient, Router(), BrandedPortal(), FormControl, FormDescription (+81 more)
+Nodes (58): _addCheck(), base64(), base64url(), cidr(), cuid(), cuid2(), dateRangeConds(), datetime() (+50 more)
+
+### Community 9 - "new-batch.tsx"
+Cohesion: 0.05
+Nodes (84): AuthFormSplitScreenDemo(), sleep(), FormControl, FormDescription, FormField(), FormFieldContext, FormFieldContextValue, FormItem (+76 more)
 
 ### Community 10 - "call"
-Cohesion: 0.06
-Nodes (43): "../../node_modules/.pnpm/call-bind-apply-helpers@1.0.2/node_modules/call-bind-apply-helpers/actualApply.js"(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/memory.js"(), "../../node_modules/.pnpm/has-symbols@1.1.0/node_modules/has-symbols/shams.js"(), "../../node_modules/.pnpm/hasown@2.0.3/node_modules/hasown/index.js"(), "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/dbcs-codec.js"(), DBCSCodec(), "../../node_modules/.pnpm/object-assign@4.1.1/node_modules/object-assign/index.js"(), shouldUseNative() (+35 more)
+Cohesion: 0.10
+Nodes (36): "../../node_modules/.pnpm/call-bind-apply-helpers@1.0.2/node_modules/call-bind-apply-helpers/actualApply.js"(), "../../node_modules/.pnpm/has-symbols@1.1.0/node_modules/has-symbols/shams.js"(), "../../node_modules/.pnpm/hasown@2.0.3/node_modules/hasown/index.js"(), "../../node_modules/.pnpm/object-inspect@1.13.4/node_modules/object-inspect/index.js"(), addNumericSeparator(), canTrustToString(), collectionOf(), getIndent() (+28 more)
 
 ### Community 11 - "api-zod/src/generated/api.ts"
 Cohesion: 0.03
 Nodes (58): companyUrlVerifyRegExp, createCompanyBodyGstinRegExp, DeleteBatchParams, DeleteCompanyParams, DeleteLocationParams, DeleteProductParams, DeleteUserParams, GenerateCodesBody (+50 more)
 
-### Community 12 - ""../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/response.js""
-Cohesion: 0.09
-Nodes (30): brand(), createZodEnum(), default(), format(), keyof(), bytes(), "../../node_modules/.pnpm/cors@2.8.6/node_modules/cors/lib/index.js"(), applyHeaders() (+22 more)
+### Community 12 - "toUpperCase"
+Cohesion: 0.20
+Nodes (17): "../../node_modules/.pnpm/cors@2.8.6/node_modules/cors/lib/index.js"(), applyHeaders(), configureAllowedHeaders(), configureCredentials(), configureExposedHeaders(), configureMaxAge(), configureMethods(), configureOrigin() (+9 more)
 
 ### Community 13 - "toLowerCase"
-Cohesion: 0.10
-Nodes (32): "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/index.js"(), getInstance(), "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/utils.js"(), convertToUTF8(), parseContentType(), parseContentTypeParams(), parseDisposition(), parseDispositionParams() (+24 more)
+Cohesion: 0.09
+Nodes (36): "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/index.js"(), getInstance(), "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/utils.js"(), convertToUTF8(), getDecoder(), parseContentType(), parseContentTypeParams(), parseDisposition() (+28 more)
 
 ### Community 14 - "routes/index.ts"
 Cohesion: 0.08
-Nodes (30): AuthUser, Express, express-session, Request, requireAuth(), requireModule(), requireRole(), SessionData (+22 more)
+Nodes (29): schema(), AuthUser, Express, express-session, Request, requireAuth(), requireModule(), requireRole() (+21 more)
 
 ### Community 15 - "pino2"
 Cohesion: 0.06
-Nodes (48): "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/levels.js"(), assertDefaultLevelFound(), assertLevelComparison(), assertNoLevelCollisions(), genLevelComparison(), genLsCache(), isStandardLevel(), mappings() (+40 more)
+Nodes (52): "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/levels.js"(), assertDefaultLevelFound(), assertLevelComparison(), assertNoLevelCollisions(), genLevelComparison(), genLsCache(), isStandardLevel(), mappings() (+44 more)
 
 ### Community 16 - "emit"
-Cohesion: 0.09
-Nodes (38): assert(), "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/types/multipart.js"(), callAndUnsetCb(), checkEndState(), finalcb(), emit(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/destroy.js"(), destroy() (+30 more)
+Cohesion: 0.11
+Nodes (31): assert(), emit(), callFinal(), prefinish(), "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(), actualClose(), closeWrapped(), done() (+23 more)
 
 ### Community 17 - ""../../node_modules/.pnpm/send@1.2.1/node_modules/send/index.js""
-Cohesion: 0.06
-Nodes (41): error(), "../../node_modules/.pnpm/encodeurl@2.0.0/node_modules/encodeurl/index.js"(), encodeUrl(), "../../node_modules/.pnpm/escape-html@1.0.3/node_modules/escape-html/index.js"(), escapeHtml(), "../../node_modules/.pnpm/finalhandler@2.1.1/node_modules/finalhandler/index.js"(), createHtmlDocument(), finalhandler() (+33 more)
+Cohesion: 0.08
+Nodes (35): error(), "../../node_modules/.pnpm/encodeurl@2.0.0/node_modules/encodeurl/index.js"(), encodeUrl(), "../../node_modules/.pnpm/escape-html@1.0.3/node_modules/escape-html/index.js"(), escapeHtml(), logerror(), "../../node_modules/.pnpm/finalhandler@2.1.1/node_modules/finalhandler/index.js"(), createHtmlDocument() (+27 more)
 
-### Community 18 - "done"
-Cohesion: 0.12
-Nodes (25): length(), limit(), getDecoder(), createError(), tryRequireAsyncHooks(), "../../node_modules/.pnpm/raw-body@3.0.2/node_modules/raw-body/index.js"(), getDecoder(), getRawBody() (+17 more)
+### Community 18 - "split"
+Cohesion: 0.10
+Nodes (16): floatSafeRemainder(), getRounds(), isIP(), "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/node.js"(), log(), parse(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/request.js"(), "../../node_modules/.pnpm/mime-types@3.0.2/node_modules/mime-types/mimeScore.js"() (+8 more)
 
 ### Community 19 - "mockup-sandbox/src/components/ui/sidebar.tsx"
 Cohesion: 0.06
 Nodes (38): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants (+30 more)
 
-### Community 20 - "split"
-Cohesion: 0.08
-Nodes (43): floatSafeRemainder(), getRounds(), parse(), "../../node_modules/.pnpm/mime-types@3.0.2/node_modules/mime-types/mimeScore.js"(), "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/index.js"(), "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/charset.js"(), getCharsetPriority(), getFullCharset() (+35 more)
+### Community 20 - ""../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/mediaType.js""
+Cohesion: 0.12
+Nodes (26): "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/index.js"(), "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/charset.js"(), getCharsetPriority(), getFullCharset(), preferredCharsets(), specify(), "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/encoding.js"(), getEncodingPriority() (+18 more)
 
 ### Community 21 - "debug"
-Cohesion: 0.11
-Nodes (43): "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/read.js"(), contentstream(), createDecompressionStream(), dump(), read(), "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/types/text.js"(), text2(), basename() (+35 more)
+Cohesion: 0.12
+Nodes (41): "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/read.js"(), contentstream(), createDecompressionStream(), dump(), read(), basename(), debug(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/view.js"() (+33 more)
 
-### Community 22 - "push"
-Cohesion: 0.05
-Nodes (88): addSetOperators(), aliasedTable(), aliasedTableColumn(), all(), and(), as(), buildCount(), buildDeleteQuery() (+80 more)
+### Community 22 - "join"
+Cohesion: 0.06
+Nodes (73): aliasedTable(), aliasedTableColumn(), all(), and(), buildCount(), buildDeleteQuery(), buildEmbeddedCount(), buildFromTable() (+65 more)
 
 ### Community 23 - "mockup-sandbox/src/components/ui/carousel.tsx"
 Cohesion: 0.07
@@ -512,8 +523,8 @@ Cohesion: 0.05
 Nodes (36): AuthSession, Batch, Code, CodeLevel, Company, CreateBatchBody, CreateCompanyBody, CreateLocationBody (+28 more)
 
 ### Community 26 - "once"
-Cohesion: 0.11
-Nodes (19): abort(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/lib/counter.js"(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/storage/memory.js"(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"(), eos(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/pipeline.js"(), destroyer(), isRequest() (+11 more)
+Cohesion: 0.08
+Nodes (24): abort(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/lib/counter.js"(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/storage/memory.js"(), "../../node_modules/.pnpm/once@1.4.0/node_modules/once/once.js"(), "../../node_modules/.pnpm/pgpass@1.0.5/node_modules/pgpass/lib/helper.js"(), onLine(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"(), eos() (+16 more)
 
 ### Community 27 - "devDependencies"
 Cohesion: 0.11
@@ -528,8 +539,8 @@ Cohesion: 0.06
 Nodes (22): Checkbox, HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, Kbd(), KbdGroup() (+14 more)
 
 ### Community 30 - "getPgColumnBuilders"
-Cohesion: 0.08
-Nodes (39): bigint(), bigserial(), bit(), boolean(), char(), customType(), date(), doublePrecision() (+31 more)
+Cohesion: 0.09
+Nodes (33): bigint(), bigserial(), bit(), boolean(), char(), customType(), date(), doublePrecision() (+25 more)
 
 ### Community 31 - ""../../node_modules/.pnpm/postgres-interval@1.2.0/node_modules/postgres-interval/index.js""
 Cohesion: 0.40
@@ -537,31 +548,31 @@ Nodes (5): extend(), "../../node_modules/.pnpm/postgres-interval@1.2.0/node_modu
 
 ### Community 32 - "pino-pretty.js"
 Cohesion: 0.09
-Nodes (26): "../../node_modules/.pnpm/colorette@2.0.20/node_modules/colorette/index.cjs"(), "../../node_modules/.pnpm/dateformat@4.6.3/node_modules/dateformat/lib/dateformat.js"(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/pretty.js"(), pretty(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/create-date.js"(), createDate(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/format-time.js"(), formatTime() (+18 more)
+Nodes (24): "../../node_modules/.pnpm/colorette@2.0.20/node_modules/colorette/index.cjs"(), "../../node_modules/.pnpm/dateformat@4.6.3/node_modules/dateformat/lib/dateformat.js"(), "../../node_modules/.pnpm/pino-abstract-transport@3.0.0/node_modules/pino-abstract-transport/index.js"(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/pretty.js"(), pretty(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/handle-custom-levels-names-opts.js"(), handleCustomLevelsNamesOpts(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/handle-custom-levels-opts.js"() (+16 more)
 
 ### Community 33 - ""../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/buffer_list.js""
 Cohesion: 0.10
 Nodes (30): "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/async_iterator.js"(), createIterResult(), _defineProperty(), onReadable(), readAndResolve(), _toPrimitive(), _toPropertyKey(), wrapForNext() (+22 more)
 
 ### Community 34 - "customFetch"
-Cohesion: 0.06
-Nodes (32): customFetch(), isRequest(), resolveMethod(), createBatch(), createProduct(), deleteUser(), generateCodes(), getCreateBatchMutationOptions() (+24 more)
-
-### Community 35 - ""../../node_modules/.pnpm/router@2.2.0/node_modules/router/index.js""
 Cohesion: 0.07
-Nodes (40): deprecate(), param2(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/express.js"(), createApplication(), writeend(), writetop(), "../../node_modules/.pnpm/is-promise@4.0.0/node_modules/is-promise/index.js"(), isPromise() (+32 more)
+Nodes (29): customFetch(), isRequest(), resolveMethod(), createBatch(), createProduct(), deleteUser(), generateCodes(), getCreateBatchMutationOptions() (+21 more)
 
-### Community 36 - "with"
-Cohesion: 0.24
-Nodes (9): getDialect(), insert(), select(), selectDistinct(), selectDistinctOn(), with(), select(), selectDistinct() (+1 more)
+### Community 35 - "done"
+Cohesion: 0.09
+Nodes (37): length(), limit(), param2(), writeend(), writetop(), createError(), readStream(), cleanup() (+29 more)
+
+### Community 36 - "update"
+Cohesion: 0.15
+Nodes (16): getDialect(), insert(), "../../node_modules/.pnpm/cookie-signature@1.0.6/node_modules/cookie-signature/index.js"(), sha1(), "../../node_modules/.pnpm/cookie-signature@1.0.7/node_modules/cookie-signature/index.js"(), sha1(), "../../node_modules/.pnpm/cookie-signature@1.2.2/node_modules/cookie-signature/index.js"(), decrypt() (+8 more)
 
 ### Community 37 - "reports.ts"
-Cohesion: 0.10
-Nodes (24): router, Batch, batchesTable, InsertBatch, Code, codesTable, InsertCode, companiesTable (+16 more)
+Cohesion: 0.08
+Nodes (28): router, router, Batch, batchesTable, InsertBatch, Code, codesTable, InsertCode (+20 more)
 
 ### Community 38 - "write"
-Cohesion: 0.08
-Nodes (41): remove(), "../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"(), callRefs(), clear(), ensureRegistry(), install(), onBeforeExit(), onExit() (+33 more)
+Cohesion: 0.06
+Nodes (44): "../../node_modules/.pnpm/iconv-lite@0.7.2/node_modules/iconv-lite/encodings/utf7.js"(), remove(), "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/connection.js"(), "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/multistream.js"(), adjustLoopVar(), checkLoopVar(), compareByLevel(), initLoopVar() (+36 more)
 
 ### Community 39 - ""../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js""
 Cohesion: 0.14
@@ -576,16 +587,16 @@ Cohesion: 0.11
 Nodes (27): ApiError, applyBaseUrl(), AuthTokenGetter, BodyType, buildErrorMessage(), CustomFetchOptions, ErrorType, getMediaType() (+19 more)
 
 ### Community 42 - "callback"
-Cohesion: 0.12
-Nodes (21): "../../node_modules/.pnpm/ee-first@1.1.1/node_modules/ee-first/index.js"(), first(), callback(), listener(), tryRender(), sendfile(), onaborted(), ondirectory() (+13 more)
+Cohesion: 0.09
+Nodes (27): "../../node_modules/.pnpm/ee-first@1.1.1/node_modules/ee-first/index.js"(), first(), callback(), listener(), tryRender(), sendfile(), onaborted(), ondirectory() (+19 more)
 
 ### Community 43 - ""../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/_stream_writable.js""
 Cohesion: 0.13
-Nodes (26): errorOrDestroy(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/state.js"(), getHighWaterMark(), highWaterMarkFrom(), ReadableState(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/_stream_writable.js"(), afterWrite(), callFinal() (+18 more)
+Nodes (24): errorOrDestroy(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/state.js"(), getHighWaterMark(), highWaterMarkFrom(), ReadableState(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/_stream_writable.js"(), afterWrite(), clearBuffer() (+16 more)
 
 ### Community 44 - "sort"
-Cohesion: 0.13
-Nodes (29): "../../node_modules/.pnpm/content-type@1.0.5/node_modules/content-type/index.js"(), format(), parse(), "../../node_modules/.pnpm/media-typer@0.3.0/node_modules/media-typer/index.js"(), format(), getcontenttype(), parse(), qstring() (+21 more)
+Cohesion: 0.21
+Nodes (22): format(), format(), qstring(), stringify(), "../../node_modules/.pnpm/qs@6.15.1/node_modules/qs/lib/stringify.js"(), "../../node_modules/.pnpm/safe-stable-stringify@2.5.0/node_modules/safe-stable-stringify/index.js"(), configure(), stringify2() (+14 more)
 
 ### Community 45 - "pino-worker.js"
 Cohesion: 0.08
@@ -613,11 +624,11 @@ Nodes (24): Toast, ToastAction, ToastActionElement, ToastClose, ToastDescription
 
 ### Community 51 - ""../../node_modules/.pnpm/@pinojs+redact@0.4.0/node_modules/@pinojs/redact/index.js""
 Cohesion: 0.14
-Nodes (24): "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/index.js"(), appendField(), "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/lib/parse-path.js"(), parsePath(), "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/lib/set-value.js"(), setLastValue(), setValue(), valueType() (+16 more)
+Nodes (23): "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/index.js"(), appendField(), "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/lib/parse-path.js"(), parsePath(), "../../node_modules/.pnpm/append-field@1.0.0/node_modules/append-field/lib/set-value.js"(), setLastValue(), setValue(), valueType() (+15 more)
 
 ### Community 52 - "sql"
 Cohesion: 0.08
-Nodes (40): arrayContained(), arrayContains(), arrayOverlaps(), asc(), avg(), avgDistinct(), between(), bindIfParam() (+32 more)
+Nodes (42): arrayContained(), arrayContains(), arrayOverlaps(), as(), asc(), avg(), avgDistinct(), between() (+34 more)
 
 ### Community 53 - "emit"
 Cohesion: 0.16
@@ -629,19 +640,19 @@ Nodes (25): workspace, compilerOptions, alwaysStrict, customConditions, isolated
 
 ### Community 55 - "session2"
 Cohesion: 0.17
-Nodes (21): isDate(), serialize(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/index.js"(), getcookie(), hash2(), issecure(), session2(), generate() (+13 more)
+Nodes (21): deprecate(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/index.js"(), getcookie(), hash2(), issecure(), session2(), generate(), inflate() (+13 more)
 
 ### Community 56 - "multistream"
 Cohesion: 0.27
 Nodes (11): "../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/multistream.js"(), adjustLoopVar(), checkLoopVar(), compareByLevel(), initLoopVar(), multistream(), add(), clone() (+3 more)
 
-### Community 57 - "update"
-Cohesion: 0.09
-Nodes (36): isBase64(), "../../node_modules/.pnpm/cookie-signature@1.0.6/node_modules/cookie-signature/index.js"(), sha1(), "../../node_modules/.pnpm/cookie-signature@1.0.7/node_modules/cookie-signature/index.js"(), sha1(), "../../node_modules/.pnpm/cookie-signature@1.2.2/node_modules/cookie-signature/index.js"(), decrypt(), "../../node_modules/.pnpm/etag@1.8.1/node_modules/etag/index.js"() (+28 more)
+### Community 57 - ""../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/crypto/sasl.js""
+Cohesion: 0.15
+Nodes (24): isBase64(), "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/crypto/cert-signatures.js"(), expectASN1Seq(), readASN1Length(), readASN1OID(), signatureAlgorithmHashFromCertificate(), x509Error(), "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/crypto/sasl.js"() (+16 more)
 
 ### Community 58 - ""../../node_modules/.pnpm/fast-copy@4.0.3/node_modules/fast-copy/dist/cjs/index.cjs""
-Cohesion: 0.17
-Nodes (24): "../../node_modules/.pnpm/fast-copy@4.0.3/node_modules/fast-copy/dist/cjs/index.cjs"(), copyArrayBuffer(), copyArrayLoose(), copyArrayStrict(), copyBlob(), copyDataView(), copyDate(), copyMapLoose() (+16 more)
+Cohesion: 0.16
+Nodes (25): "../../node_modules/.pnpm/fast-copy@4.0.3/node_modules/fast-copy/dist/cjs/index.cjs"(), copyArrayBuffer(), copyArrayLoose(), copyArrayStrict(), copyBlob(), copyDataView(), copyDate(), copyMapLoose() (+17 more)
 
 ### Community 59 - "dependencies"
 Cohesion: 0.09
@@ -652,8 +663,8 @@ Cohesion: 0.08
 Nodes (12): Batch, CreateBatchBody, CreateCompanyBody, GetPalletSummaryParams, GetProductReportParams, GetShipperSummaryParams, GetStockReportParams, HealthStatus (+4 more)
 
 ### Community 61 - "routes/codes.ts"
-Cohesion: 0.19
-Nodes (16): run(), checkDigit(), FNC1, formatExpiry(), generateSsccCode(), generateUnitCode(), isValidGtin(), makeRandomDigits() (+8 more)
+Cohesion: 0.18
+Nodes (17): run(), checkDigit(), FNC1, formatExpiry(), generateSsccCode(), generateUnitCode(), isValidGtin(), makeRandomDigits() (+9 more)
 
 ### Community 62 - ""../../node_modules/.pnpm/typedarray@0.0.6/node_modules/typedarray/index.js""
 Cohesion: 0.11
@@ -668,12 +679,12 @@ Cohesion: 0.26
 Nodes (18): stringify(), "../../node_modules/.pnpm/safe-stable-stringify@2.5.0/node_modules/safe-stable-stringify/index.js"(), configure(), stringify2(), stringifyArrayReplacer(), stringifyFnReplacer(), stringifyIndent(), stringifySimple() (+10 more)
 
 ### Community 65 - ""../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js""
-Cohesion: 0.16
-Nodes (19): "../../node_modules/.pnpm/end-of-stream@1.4.5/node_modules/end-of-stream/index.js"(), once(), "../../node_modules/.pnpm/pump@3.0.4/node_modules/pump/index.js"(), "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(), actualClose(), closeWrapped(), done(), actualWrite() (+11 more)
+Cohesion: 0.15
+Nodes (20): "../../node_modules/.pnpm/end-of-stream@1.4.5/node_modules/end-of-stream/index.js"(), once(), "../../node_modules/.pnpm/pump@3.0.4/node_modules/pump/index.js"(), "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(), actualClose(), closeWrapped(), done(), actualWrite() (+12 more)
 
-### Community 66 - "Codes"
-Cohesion: 0.36
-Nodes (10): Codes(), DataMatrixBarcode(), fixGtinCheckDigit(), fixSsccCheckDigit(), formatCustomDate(), getCustomFormattedCodeLink(), getProductString(), parseGs1Raw() (+2 more)
+### Community 66 - "codes.tsx"
+Cohesion: 0.28
+Nodes (13): Slider, useDatamatrixUrlMode(), Codes(), DataMatrixBarcode(), fixGtinCheckDigit(), fixSsccCheckDigit(), formatCustomDate(), generateSchema (+5 more)
 
 ### Community 67 - ""../../node_modules/.pnpm/depd@2.0.0/node_modules/depd/index.js""
 Cohesion: 0.21
@@ -684,8 +695,8 @@ Cohesion: 0.13
 Nodes (17): ButtonGroup(), ButtonGroupSeparator(), ButtonGroupText(), buttonGroupVariants, Item(), ItemActions(), ItemContent(), ItemDescription() (+9 more)
 
 ### Community 69 - "urlencoded"
-Cohesion: 0.15
-Nodes (17): "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/types/json.js"(), createStrictSyntaxError(), firstchar(), json2(), parse(), normalizeJsonSyntaxError(), "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/types/raw.js"(), raw() (+9 more)
+Cohesion: 0.14
+Nodes (19): "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/types/json.js"(), createStrictSyntaxError(), firstchar(), json2(), parse(), normalizeJsonSyntaxError(), "../../node_modules/.pnpm/body-parser@2.2.2/node_modules/body-parser/lib/types/raw.js"(), raw() (+11 more)
 
 ### Community 70 - "TracelyTag --- QR Architecture, Database & Client Data Management"
 Cohesion: 0.05
@@ -723,9 +734,9 @@ Nodes (16): "../../node_modules/.pnpm/@pinojs+redact@0.4.0/node_modules/@pinojs/
 Cohesion: 0.24
 Nodes (16): "../../node_modules/.pnpm/@pinojs+redact@0.4.0/node_modules/@pinojs/redact/index.js"(), buildPathStructure(), deepClone(), getValue(), getValueIfExists(), parsePath(), redactIntermediateWildcard(), traverse() (+8 more)
 
-### Community 79 - "db-reset.ts"
-Cohesion: 0.10
-Nodes (20): resetAndSeedDatabase(), seedDatabase(), port, sendOtpEmail(), transporter, router, main(), LoginBody (+12 more)
+### Community 79 - "auth.ts"
+Cohesion: 0.12
+Nodes (13): port, sendOtpEmail(), transporter, router, LoginBody, LoginResponse, RegisterBody, DeviceCode (+5 more)
 
 ### Community 80 - "mockup-sandbox/src/components/ui/command.tsx"
 Cohesion: 0.12
@@ -735,17 +746,17 @@ Nodes (14): Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Comm
 Cohesion: 0.12
 Nodes (16): aliases, components, hooks, lib, ui, utils, rsc, $schema (+8 more)
 
-### Community 82 - ""../../node_modules/.pnpm/string_decoder@1.3.0/node_modules/string_decoder/lib/string_decoder.js""
+### Community 82 - "destroy"
 Cohesion: 0.16
-Nodes (14): "../../node_modules/.pnpm/string_decoder@1.3.0/node_modules/string_decoder/lib/string_decoder.js"(), base64End(), base64Text(), _normalizeEncoding(), simpleEnd(), simpleWrite(), utf16End(), utf16Text() (+6 more)
+Nodes (12): createSession(), "../../node_modules/.pnpm/busboy@1.6.0/node_modules/busboy/lib/types/multipart.js"(), callAndUnsetCb(), checkEndState(), finalcb(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/session.js"(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/store.js"(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/lib/internal/streams/destroy.js"() (+4 more)
 
-### Community 83 - ""../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/errors.js""
-Cohesion: 0.22
-Nodes (7): message(), "../../node_modules/.pnpm/readable-stream@3.6.2/node_modules/readable-stream/errors.js"(), createErrorType(), getMessage(), includes(), oneOf(), startsWith()
+### Community 83 - ""../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js""
+Cohesion: 0.09
+Nodes (22): endsWith(), message(), formatArgs(), write(), "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js"(), arrayString(), cloneQueryConfig(), dateToString() (+14 more)
 
 ### Community 84 - "indexOf"
-Cohesion: 0.08
-Nodes (34): isIP(), mergeValues(), "../../node_modules/.pnpm/accepts@2.0.0/node_modules/accepts/index.js"(), extToMime(), "../../node_modules/.pnpm/cookie@0.7.2/node_modules/cookie/index.js"(), decode(), endIndex(), isDate() (+26 more)
+Cohesion: 0.10
+Nodes (31): format(), "../../node_modules/.pnpm/accepts@2.0.0/node_modules/accepts/index.js"(), extToMime(), contentDisposition(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/response.js"(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/utils.js"(), acceptParams(), createETagGenerator() (+23 more)
 
 ### Community 85 - "scripts/package.json"
 Cohesion: 0.15
@@ -759,21 +770,21 @@ Nodes (8): Code, CodeLevel, DashboardSummary, GenerateCodesBody, GenerateCodesRe
 Cohesion: 0.23
 Nodes (16): log(), "../../node_modules/.pnpm/dotenv@16.6.1/node_modules/dotenv/lib/main.js"(), config2(), configDotenv(), _configVault(), _debug(), _dotenvKey(), _instructions() (+8 more)
 
-### Community 88 - "push"
-Cohesion: 0.19
-Nodes (11): "../../node_modules/.pnpm/pino-abstract-transport@3.0.0/node_modules/pino-abstract-transport/index.js"(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/handle-custom-levels-names-opts.js"(), handleCustomLevelsNamesOpts(), handleCustomLevelsOpts(), parseFactoryOptions(), writeBuffer(), "../../node_modules/.pnpm/split2@4.2.0/node_modules/split2/index.js"(), flush() (+3 more)
+### Community 88 - ""../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js""
+Cohesion: 0.24
+Nodes (14): "../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"(), callRefs(), clear(), ensureRegistry(), install(), onBeforeExit(), onExit(), _register() (+6 more)
 
 ### Community 89 - "getPropertyValue"
+Cohesion: 0.16
+Nodes (14): "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/delete-log-property.js"(), deleteLogProperty(), filterLog(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/get-property-value.js"(), getPropertyValue(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/interpret-conditionals.js"(), interpretConditionals(), replacer() (+6 more)
+
+### Community 90 - ""../../node_modules/.pnpm/concat-stream@2.0.0/node_modules/concat-stream/index.js""
+Cohesion: 0.23
+Nodes (13): "../../node_modules/.pnpm/buffer-from@1.1.2/node_modules/buffer-from/index.js"(), bufferFrom(), fromArrayBuffer(), fromString(), isArrayBuffer(), "../../node_modules/.pnpm/concat-stream@2.0.0/node_modules/concat-stream/index.js"(), bufferConcat(), ConcatStream() (+5 more)
+
+### Community 91 - "db-reset.ts"
 Cohesion: 0.15
-Nodes (15): "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/delete-log-property.js"(), deleteLogProperty(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/filter-log.js"(), filterLog(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/get-property-value.js"(), getPropertyValue(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/interpret-conditionals.js"(), interpretConditionals() (+7 more)
-
-### Community 90 - ""../../node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr/index.js""
-Cohesion: 0.13
-Nodes (23): "../../node_modules/.pnpm/buffer-from@1.1.2/node_modules/buffer-from/index.js"(), bufferFrom(), fromArrayBuffer(), fromString(), isArrayBuffer(), "../../node_modules/.pnpm/concat-stream@2.0.0/node_modules/concat-stream/index.js"(), bufferConcat(), ConcatStream() (+15 more)
-
-### Community 91 - "app.ts"
-Cohesion: 0.24
-Nodes (7): app, port, start(), bootstrapDatabase(), logger, loadUser(), router
+Nodes (14): app, port, start(), bootstrapDatabase(), resetAndSeedDatabase(), seedDatabase(), logger, loadUser() (+6 more)
 
 ### Community 92 - "mockup-sandbox/src/App.tsx"
 Cohesion: 0.22
@@ -788,16 +799,16 @@ Cohesion: 0.19
 Nodes (13): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+5 more)
 
 ### Community 95 - ""../../node_modules/.pnpm/content-disposition@1.1.0/node_modules/content-disposition/index.js""
-Cohesion: 0.25
-Nodes (12): "../../node_modules/.pnpm/content-disposition@1.1.0/node_modules/content-disposition/index.js"(), contentDisposition(), createparams(), decodefield(), decodeHexEscapes(), format(), getlatin1(), hasHexEscape() (+4 more)
+Cohesion: 0.27
+Nodes (11): "../../node_modules/.pnpm/content-disposition@1.1.0/node_modules/content-disposition/index.js"(), createparams(), decodefield(), decodeHexEscapes(), format(), getlatin1(), hasHexEscape(), isHexDigit() (+3 more)
 
-### Community 96 - "dashboard.tsx"
-Cohesion: 0.25
-Nodes (6): Dashboard(), DEFAULT_SCAN_LOCATIONS, NETWORK_CONNECTIONS, NetworkConnection, ScanLocationItem, useGetDashboardSummary()
+### Community 96 - "serialize"
+Cohesion: 0.24
+Nodes (11): isDate(), "../../node_modules/.pnpm/cookie@0.7.2/node_modules/cookie/index.js"(), decode(), endIndex(), isDate(), parse(), serialize(), startIndex() (+3 more)
 
 ### Community 97 - "includes"
-Cohesion: 0.07
-Nodes (37): args(), checkDigit(), create(), discriminator(), exclude(), extract(), generateUnitCode(), includes() (+29 more)
+Cohesion: 0.10
+Nodes (29): checkDigit(), flatten(), formErrors(), generateUnitCode(), includes(), isValidGtin(), makeSerial(), "../../node_modules/.pnpm/path-to-regexp@8.4.2/node_modules/path-to-regexp/dist/index.js"() (+21 more)
 
 ### Community 98 - "push"
 Cohesion: 0.18
@@ -820,8 +831,8 @@ Cohesion: 0.27
 Nodes (8): "../../node_modules/.pnpm/http-errors@2.0.1/node_modules/http-errors/index.js"(), codeClass(), createClientErrorConstructor(), createHttpErrorConstructor(), createServerErrorConstructor(), nameFunc(), populateConstructorExports(), toClassName()
 
 ### Community 103 - "makeMiddleware"
-Cohesion: 0.15
-Nodes (12): errors(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/index.js"(), setup(), makeMiddleware(), abortWithCode(), abortWithError(), finishAbort(), handleRequestFailure() (+4 more)
+Cohesion: 0.16
+Nodes (11): "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/index.js"(), setup(), "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/lib/make-middleware.js"(), makeMiddleware(), abortWithCode(), abortWithError(), finishAbort(), handleRequestFailure() (+3 more)
 
 ### Community 104 - ""../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js""
 Cohesion: 0.30
@@ -875,9 +886,9 @@ Nodes (9): ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLe
 Cohesion: 0.24
 Nodes (9): InputGroup(), InputGroupAddon(), inputGroupAddonVariants, InputGroupButton(), inputGroupButtonVariants, InputGroupInput(), InputGroupText(), InputGroupTextarea() (+1 more)
 
-### Community 118 - ""../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js""
-Cohesion: 0.32
-Nodes (7): "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/utils.js"(), arrayString(), cloneQueryConfig(), dateToString(), escapeElement(), normalizeQueryConfig(), prepareObject()
+### Community 118 - ""../../node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr/index.js""
+Cohesion: 0.31
+Nodes (10): "../../node_modules/.pnpm/proxy-addr@2.0.7/node_modules/proxy-addr/index.js"(), alladdrs(), compile(), compileRangeSubnets(), compileTrust(), parseipNotation(), parseNetmask(), proxyaddr() (+2 more)
 
 ### Community 119 - "2. Threat Vector Breakdown & CVE/CWE Alignment"
 Cohesion: 0.07
@@ -919,9 +930,9 @@ Nodes (7): "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/stream.js"(),
 Cohesion: 0.29
 Nodes (6): FULL_MONTH_NAMES, HierarchicalDatePicker(), HierarchicalDatePickerProps, MONTH_NAMES, ViewStep, WEEKDAYS
 
-### Community 129 - ""../../node_modules/.pnpm/fast-safe-stringify@2.1.1/node_modules/fast-safe-stringify/index.js""
-Cohesion: 0.47
-Nodes (9): "../../node_modules/.pnpm/fast-safe-stringify@2.1.1/node_modules/fast-safe-stringify/index.js"(), compareFunction(), decirc(), defaultOptions(), deterministicDecirc(), deterministicStringify(), replaceGetterValues(), setReplace() (+1 more)
+### Community 129 - "push"
+Cohesion: 0.27
+Nodes (13): "../../node_modules/.pnpm/fast-safe-stringify@2.1.1/node_modules/fast-safe-stringify/index.js"(), compareFunction(), decirc(), defaultOptions(), deterministicDecirc(), deterministicStringify(), replaceGetterValues(), setReplace() (+5 more)
 
 ### Community 131 - "4. Mobile APK Compilation & Integration Guide"
 Cohesion: 0.09
@@ -963,9 +974,9 @@ Nodes (7): Empty(), EmptyContent(), EmptyDescription(), EmptyHeader(), EmptyMedi
 Cohesion: 0.29
 Nodes (7): NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuViewport
 
-### Community 141 - "endsWith"
-Cohesion: 0.47
-Nodes (6): endsWith(), "../../node_modules/.pnpm/postgres-date@1.0.7/node_modules/postgres-date/index.js"(), bcYearToNegativeYear(), getDate(), is0To99(), timeZoneOffset()
+### Community 141 - "status"
+Cohesion: 0.29
+Nodes (9): json(), "../../node_modules/.pnpm/statuses@2.0.2/node_modules/statuses/index.js"(), createMessageToStatusCodeMap(), getStatusCode(), getStatusMessage(), status(), requireAuth(), requireModule() (+1 more)
 
 ### Community 142 - ""../../node_modules/.pnpm/pino@9.14.0/node_modules/pino/lib/proto.js""
 Cohesion: 0.33
@@ -983,9 +994,9 @@ Nodes (3): configureProperties(), makeArrayAccessors(), makeConstructor()
 Cohesion: 0.50
 Nodes (3): "../../node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js"(), makeIdleListener(), promisify()
 
-### Community 146 - "demo.tsx"
-Cohesion: 0.67
-Nodes (3): AuthFormSplitScreenDemo(), sleep(), AuthFormSplitScreen()
+### Community 146 - ""../../node_modules/.pnpm/content-type@1.0.5/node_modules/content-type/index.js""
+Cohesion: 0.28
+Nodes (6): "../../node_modules/.pnpm/content-type@1.0.5/node_modules/content-type/index.js"(), parse(), "../../node_modules/.pnpm/media-typer@0.3.0/node_modules/media-typer/index.js"(), getcontenttype(), parse(), splitType()
 
 ### Community 147 - "getGetMarkedByLogQueryOptions"
 Cohesion: 0.50
@@ -996,8 +1007,8 @@ Cohesion: 0.10
 Nodes (20): 1. Stop & Remove all containers EXCEPT `jenkins`, 2. Reset the Kubernetes Namespace (Removes old DB, Redis, Backend, Frontend pods), 3. Remove all unused Docker images and build caches (Frees up disk), Case A: If you cloned the repository directly in a folder on the VPS, Case B: If deploying through Jenkins, Option A: Reset only the application namespace (Keep K3s running), Option B: Full wipe of K3s cluster (Start 100% fresh), Revised Cleanup Steps on VPS (+12 more)
 
 ### Community 149 - "get"
-Cohesion: 0.11
-Nodes (17): createSession(), get(), "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/node.js"(), log(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js"(), logerror(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/session.js"(), "../../node_modules/.pnpm/express-session@1.19.0/node_modules/express-session/session/store.js"() (+9 more)
+Cohesion: 0.35
+Nodes (11): get(), arrObjKeys(), has(), inspect(), buildPathStructure(), cloneSelectively(), "../../node_modules/.pnpm/qs@6.15.1/node_modules/qs/lib/utils.js"(), "../../node_modules/.pnpm/side-channel@1.1.0/node_modules/side-channel/index.js"() (+3 more)
 
 ### Community 150 - ""../../node_modules/.pnpm/cookie-parser@1.4.7/node_modules/cookie-parser/index.js""
 Cohesion: 0.60
@@ -1019,9 +1030,13 @@ Nodes (6): actualClose(), closeWrapped(), done(), "../../node_modules/.pnpm/thre
 Cohesion: 0.47
 Nodes (6): actualClose(), closeWrapped(), done(), "../../node_modules/.pnpm/thread-stream@3.1.0/node_modules/thread-stream/lib/wait.js"(), wait(), waitDiff()
 
-### Community 156 - "ssoRequests.ts"
-Cohesion: 0.50
-Nodes (3): InsertSsoRequest, SsoRequest, ssoRequestsTable
+### Community 155 - ""../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/browser.js""
+Cohesion: 0.22
+Nodes (5): localstorage(), "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/browser.js"(), useColors(), destroy(), warn()
+
+### Community 156 - "createDebug"
+Cohesion: 0.28
+Nodes (9): createDebug(), selectColor(), init(), useColors(), createDebug(), debug(), extend(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/express.js"() (+1 more)
 
 ### Community 157 - "README.md"
 Cohesion: 0.12
@@ -1056,8 +1071,12 @@ Cohesion: 0.67
 Nodes (3): Badge(), BadgeProps, badgeVariants
 
 ### Community 167 - "getDashboardSummary"
-Cohesion: 0.50
-Nodes (4): getDashboardSummary(), getGetDashboardSummaryQueryKey(), getGetDashboardSummaryQueryOptions(), getGetDashboardSummaryUrl()
+Cohesion: 0.40
+Nodes (5): getDashboardSummary(), getGetDashboardSummaryQueryKey(), getGetDashboardSummaryQueryOptions(), getGetDashboardSummaryUrl(), useGetDashboardSummary()
+
+### Community 168 - ""../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/language.js""
+Cohesion: 0.36
+Nodes (7): "../../node_modules/.pnpm/negotiator@1.0.0/node_modules/negotiator/lib/language.js"(), getFullLanguage(), getLanguagePriority(), parseAcceptLanguage(), parseLanguage(), preferredLanguages(), specify()
 
 ### Community 169 - "getGetMyCompanyQueryOptions"
 Cohesion: 0.50
@@ -1088,12 +1107,12 @@ Cohesion: 0.50
 Nodes (4): getUpdateMyCompanyMutationOptions(), getUpdateMyCompanyUrl(), updateMyCompany(), useUpdateMyCompany()
 
 ### Community 178 - ""../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/node.js""
-Cohesion: 0.06
-Nodes (31): "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/browser.js"(), localstorage(), log(), useColors(), "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/debug.js"(), createDebug(), disable(), enable() (+23 more)
+Cohesion: 0.20
+Nodes (5): "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/browser.js"(), log(), useColors(), "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/node.js"(), load()
 
-### Community 180 - "createUser"
-Cohesion: 0.67
-Nodes (3): createUser(), getCreateUserMutationOptions(), getCreateUserUrl()
+### Community 180 - "formatTime"
+Cohesion: 0.29
+Nodes (8): "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/create-date.js"(), createDate(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/format-time.js"(), formatTime(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/is-valid-date.js"(), isValidDate(), "../../node_modules/.pnpm/pino-pretty@13.1.3/node_modules/pino-pretty/lib/utils/prettify-time.js"(), prettifyTime()
 
 ### Community 194 - "unpipe"
 Cohesion: 1.00
@@ -1115,9 +1134,9 @@ Nodes (14): Check Digit Algorithm, Code Generation Workflows, Core Logic and Sta
 Cohesion: 0.67
 Nodes (3): deleteBatch(), getDeleteBatchMutationOptions(), getDeleteBatchUrl()
 
-### Community 228 - "deleteLocation"
-Cohesion: 0.67
-Nodes (3): deleteLocation(), getDeleteLocationMutationOptions(), getDeleteLocationUrl()
+### Community 228 - ""../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js""
+Cohesion: 0.38
+Nodes (6): "../../node_modules/.pnpm/debug@2.6.9/node_modules/debug/src/debug.js"(), disable(), enable(), enabled(), disable(), "../../node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js"()
 
 ### Community 229 - "deleteProduct"
 Cohesion: 0.67
@@ -1231,9 +1250,9 @@ Nodes (8): Auto-Discovery Mechanism, Configuration and Aliasing, Data Flow: Comp
 Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
-### Community 281 - ""../../node_modules/.pnpm/once@1.4.0/node_modules/once/once.js""
+### Community 281 - "setup"
 Cohesion: 0.33
-Nodes (3): "../../node_modules/.pnpm/once@1.4.0/node_modules/once/once.js"(), "../../node_modules/.pnpm/wrappy@1.0.2/node_modules/wrappy/wrappy.js"(), wrappy()
+Nodes (5): "../../node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/common.js"(), setup(), enable(), enabled(), matchesTemplate()
 
 ### Community 282 - "scripts"
 Cohesion: 0.33
@@ -1250,6 +1269,10 @@ Nodes (5): 1. Dedicated Dockerfiles, 2. Orchestrated Services ([`docker-compose.
 ### Community 285 - "Graphify Smart Knowledge Graph Rules"
 Cohesion: 0.40
 Nodes (4): 1. Mandatory Smart Code Search & Navigation, 2. Smart Impact Analysis Before Refactoring, 3. Automatic Synchronization, Graphify Smart Knowledge Graph Rules
+
+### Community 287 - ""../../node_modules/.pnpm/router@2.2.0/node_modules/router/lib/layer.js""
+Cohesion: 0.38
+Nodes (7): "../../node_modules/.pnpm/is-promise@4.0.0/node_modules/is-promise/index.js"(), isPromise(), "../../node_modules/.pnpm/router@2.2.0/node_modules/router/lib/layer.js"(), decodeParam(), Layer(), matcher(), loosen()
 
 ### Community 288 - "new-webhooking.md"
 Cohesion: 0.40
@@ -1271,29 +1294,57 @@ Nodes (3): For git commit hook, For native CLAUDE.md integration, graphify refer
 Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
+### Community 293 - "traclytag/src/components/ui/toggle-group.tsx"
+Cohesion: 0.43
+Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
+
+### Community 294 - ""../../node_modules/.pnpm/pg-connection-string@2.14.1/node_modules/pg-connection-string/index.js""
+Cohesion: 0.53
+Nodes (6): "../../node_modules/.pnpm/pg-connection-string@2.14.1/node_modules/pg-connection-string/index.js"(), deprecatedSslModeWarning(), parse(), parseIntoClientConfig(), toClientConfig(), toConnectionOptions()
+
 ### Community 297 - "new-k8s.md"
 Cohesion: 0.50
 Nodes (3): Step 1: Enable Kubernetes in Docker Desktop (1 minute), Step 2: Run the Deployment, Step 3: Verify the Running Pods
 
+### Community 300 - ""../../node_modules/.pnpm/pg-types@2.2.0/node_modules/pg-types/index.js""
+Cohesion: 0.50
+Nodes (4): "../../node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/defaults.js"(), "../../node_modules/.pnpm/pg-types@2.2.0/node_modules/pg-types/index.js"(), getTypeParser(), setTypeParser()
+
+### Community 304 - "graphify.md"
+Cohesion: 0.40
+Nodes (4): 1. Instant Codebase Exploration & Search, 2. Updating & Syncing the Knowledge Graph, 3. Architecture Reports & Visualization, 4. In-Chat Assistant Commands (Antigravity)
+
+### Community 376 - "login"
+Cohesion: 0.67
+Nodes (3): getLoginMutationOptions(), getLoginUrl(), login()
+
+### Community 377 - "logout"
+Cohesion: 0.67
+Nodes (3): getLogoutMutationOptions(), getLogoutUrl(), logout()
+
+### Community 378 - "register"
+Cohesion: 0.67
+Nodes (3): getRegisterMutationOptions(), getRegisterUrl(), register()
+
 ## Knowledge Gaps
-- **1089 isolated node(s):** `1. Mandatory Smart Code Search & Navigation`, `2. Smart Impact Analysis Before Refactoring`, `3. Automatic Synchronization`, `Usage`, `What graphify is for` (+1084 more)
+- **1092 isolated node(s):** `1. Instant Codebase Exploration & Search`, `2. Updating & Syncing the Knowledge Graph`, `3. Architecture Reports & Visualization`, `4. In-Chat Assistant Commands (Antigravity)`, `PaginationLinkProps` (+1087 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **145 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **146 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `register()` connect `api-client-react/src/generated/api.ts` to `customFetch`, `write`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`?**
-  _High betweenness centrality (0.243) - this node is a cross-community bridge._
-- **Why does `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` connect `write` to `index.js`, `api-client-react/src/generated/api.ts`?**
-  _High betweenness centrality (0.197) - this node is a cross-community bridge._
-- **Why does `customFetch()` connect `customFetch` to `api-client-react/src/generated/api.ts`, `createCompany`, `AppLayout.tsx`, `products.tsx`, `createLocation`, `traclytag/src/App.tsx`, `getGetMarkedByLogQueryOptions`, `getHealthCheckQueryOptions`, `getDashboardSummary`, `custom-fetch.ts`, `getGetMyCompanyQueryOptions`, `getGetPalletSummaryQueryOptions`, `getGetShipperSummaryQueryOptions`, `getGetStockReportQueryOptions`, `mapCode`, `regenerateCompanyApiKey`, `updateMyCompany`, `createUser`, `deleteBatch`, `deleteLocation`, `deleteProduct`, `getListCodesQueryOptions`, `updateUser`, `updateCompany`?**
-  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `register()` connect `register` to `api-client-react/src/generated/api.ts`, `customFetch`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`, `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"`?**
+  _High betweenness centrality (0.232) - this node is a cross-community bridge._
+- **Why does `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"()` connect `"../../node_modules/.pnpm/on-exit-leak-free@2.1.2/node_modules/on-exit-leak-free/index.js"` to `index.js`, `register`?**
+  _High betweenness centrality (0.204) - this node is a cross-community bridge._
+- **Why does `customFetch()` connect `customFetch` to `api-client-react/src/generated/api.ts`, `createCompany`, `traclytag/src/App.tsx`, `products.tsx`, `createLocation`, `new-batch.tsx`, `getGetMarkedByLogQueryOptions`, `getHealthCheckQueryOptions`, `getDashboardSummary`, `custom-fetch.ts`, `getGetMyCompanyQueryOptions`, `getGetPalletSummaryQueryOptions`, `getGetShipperSummaryQueryOptions`, `getGetStockReportQueryOptions`, `mapCode`, `regenerateCompanyApiKey`, `updateMyCompany`, `deleteBatch`, `deleteProduct`, `getListCodesQueryOptions`, `updateUser`, `login`, `logout`, `register`, `updateCompany`?**
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
 - **Are the 8 inferred relationships involving `parse()` (e.g. with `json2()` and `urlencoded()`) actually correct?**
   _`parse()` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `1. Mandatory Smart Code Search & Navigation`, `2. Smart Impact Analysis Before Refactoring`, `3. Automatic Synchronization` to the rest of the system?**
-  _1089 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `1. Instant Codebase Exploration & Search`, `2. Updating & Syncing the Knowledge Graph`, `3. Architecture Reports & Visualization` to the rest of the system?**
+  _1092 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `index.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.007777040477770405 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.007799736495388669 - nodes in this community are weakly interconnected._
 - **Should `cn` be split into smaller, more focused modules?**
-  _Cohesion score 0.018469306404464522 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.019184318097361576 - nodes in this community are weakly interconnected._

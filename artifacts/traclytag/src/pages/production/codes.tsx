@@ -414,12 +414,12 @@ const getProductString = (
 
   // Path 1: With Valid GTIN
   if (rawGtin) {
-    return `(01)${rawGtin}${batchNum ? `-(10)${batchNum}` : ""}${mfgYY ? `-(11)${mfgYY}` : ""}${expYY ? `-(17)${expYY}` : ""}-(21)${serialNum}`;
+    return `(01)${rawGtin}${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
   }
 
   // Path 2: Without GTIN (Fix as per TracelyTag QR Architecture)
   // (01) is omitted. Encodes (10) Batch, (11) Mfg, (17) Expiry, (21) Serial
-  return `(10)${batchNum}${mfgYY ? `-(11)${mfgYY}` : ""}${expYY ? `-(17)${expYY}` : ""}-(21)${serialNum}`;
+  return `${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
 };
 
 const renderGs1Text = (codeObj: any, onCopy: () => void) => {
@@ -451,8 +451,8 @@ const renderGs1Text = (codeObj: any, onCopy: () => void) => {
   const expDisplay = formatCustomDate(parsed.expiry, codeObj.expiryDate);
 
   const productString = rawGtin
-    ? `(01)${rawGtin}${batchNum ? `-(10)${batchNum}` : ""}${mfgYY ? `-(11)${mfgYY}` : ""}${expYY ? `-(17)${expYY}` : ""}-(21)${serialNum}`
-    : `(10)${batchNum}${mfgYY ? `-(11)${mfgYY}` : ""}${expYY ? `-(17)${expYY}` : ""}-(21)${serialNum}`;
+    ? `(01)${rawGtin}${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`
+    : `${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
 
   return (
     <div className="text-[11px] font-mono text-slate-900 text-left space-y-0.5 w-full leading-tight">

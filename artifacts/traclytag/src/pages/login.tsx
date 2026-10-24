@@ -113,7 +113,9 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: resetIdentifier.trim() }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try { data = JSON.parse(text); } catch { data = { error: text || "Network error occurred" }; }
       if (!res.ok) {
         throw new Error(data.error || "Failed to process request");
       }
@@ -154,7 +156,9 @@ export default function Login() {
           newPassword: resetNewPassword,
         }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try { data = JSON.parse(text); } catch { data = { error: text || "Network error occurred" }; }
       if (!res.ok) {
         throw new Error(data.error || "Failed to update password");
       }

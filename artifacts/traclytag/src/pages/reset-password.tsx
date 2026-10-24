@@ -73,7 +73,9 @@ export default function ResetPassword() {
         }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try { data = JSON.parse(text); } catch { data = { error: text || "Network error occurred" }; }
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to reset password.");

@@ -35,14 +35,14 @@ const loginSchema = z.object({
 });
 
 const signUpSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email address"),
+  username: z.string().trim().min(1, "Username is required"),
+  email: z.string().trim().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  phone: z.string().optional(),
-  companyName: z.string().min(1, "Company Name is required"),
-  companyEmail: z.string().email("Invalid company email"),
-  companyWebsiteUrl: z.string().min(1, "Website URL is required"),
-  location: z.string().optional(),
+  phone: z.string().trim().min(1, "Phone number is required"),
+  companyName: z.string().trim().min(1, "Company Name is required"),
+  companyEmail: z.string().trim().email("Invalid company email"),
+  companyWebsiteUrl: z.string().trim().min(1, "Website URL is required"),
+  location: z.string().trim().min(1, "Session location is required"),
 });
 
 export default function Login() {
@@ -446,13 +446,13 @@ export default function Login() {
 
   function onSignUpSubmit(values: z.infer<typeof signUpSchema>) {
     const signUpData = {
-      username: values.username,
-      email: values.email,
+      username: values.username.trim(),
+      email: values.email.trim(),
       password: values.password,
-      phone: values.phone || null,
-      companyName: values.companyName,
-      companyEmail: values.companyEmail,
-      companyWebsiteUrl: values.companyWebsiteUrl,
+      phone: values.phone.trim(),
+      companyName: values.companyName.trim(),
+      companyEmail: values.companyEmail.trim(),
+      companyWebsiteUrl: values.companyWebsiteUrl.trim(),
     };
     registerMutation.mutate({ data: signUpData }, {
       onSuccess: () => {
@@ -1189,7 +1189,7 @@ export default function Login() {
                                 <div className="flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-2 gap-3 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
                                   <FormControl>
                                     <Input 
-                                      placeholder="Phone number (optional)" 
+                                      placeholder="Enter phone number" 
                                       className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm font-mono tracking-wide w-full h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
                                       {...field} 
                                     />
@@ -1281,7 +1281,7 @@ export default function Login() {
                                 <div className="flex items-center w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 h-12 rounded-lg overflow-hidden pl-4 pr-1 gap-3 focus-within:border-safety-blue focus-within:ring-1 focus-within:ring-safety-blue/20 transition-all">
                                   <FormControl>
                                     <Input 
-                                      placeholder="Start location (optional)" 
+                                      placeholder="Enter session location" 
                                       className="bg-transparent border-0 shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm tracking-wide w-full h-full p-0 text-midnight-navy dark:text-white placeholder-slate-400" 
                                       {...field} 
                                     />

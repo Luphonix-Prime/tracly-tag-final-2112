@@ -60257,7 +60257,7 @@ var RegisterBody = objectType({
   "username": stringType(),
   "email": stringType(),
   "password": stringType(),
-  "phone": stringType().nullish(),
+  "phone": stringType(),
   "companyName": stringType(),
   "companyEmail": stringType(),
   "companyWebsiteUrl": stringType()
@@ -66628,9 +66628,22 @@ router2.post("/auth/register", async (req, res) => {
     return;
   }
   const { username, email, password, phone, companyName, companyEmail, companyWebsiteUrl } = parsed.data;
-  const [existingUser] = await db.select().from(usersTable).where(eq(usersTable.username, username));
+  if (!phone || !phone.trim()) {
+    res.status(400).json({ error: "Phone number is required" });
+    return;
+  }
+  const [existingUser] = await db.select().from(usersTable).where(
+    or(
+      sql`lower(${usersTable.username}) = ${username.trim().toLowerCase()}`,
+      sql`lower(${usersTable.email}) = ${email.trim().toLowerCase()}`
+    )
+  );
   if (existingUser) {
-    res.status(400).json({ error: "Username already exists" });
+    if (existingUser.username.toLowerCase() === username.trim().toLowerCase()) {
+      res.status(400).json({ error: "Username already exists" });
+      return;
+    }
+    res.status(400).json({ error: "Email already exists" });
     return;
   }
   try {

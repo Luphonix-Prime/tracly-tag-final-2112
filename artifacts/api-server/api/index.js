@@ -60237,7 +60237,7 @@ var HealthCheckResponse = objectType({
   "status": stringType()
 });
 var LoginBody = objectType({
-  "username": stringType(),
+  "username": stringType().describe("Username or email address"),
   "password": stringType()
 });
 var LoginResponse = objectType({
@@ -60249,7 +60249,9 @@ var LoginResponse = objectType({
   "companyName": stringType().nullable(),
   "companyUrl": stringType().nullish(),
   "isActive": booleanType(),
-  "enabledModules": stringType()
+  "enabledModules": stringType(),
+  "isImpersonating": booleanType().optional(),
+  "impersonatorUsername": stringType().optional()
 });
 var RegisterBody = objectType({
   "username": stringType(),
@@ -60269,7 +60271,9 @@ var GetCurrentUserResponse = objectType({
   "companyName": stringType().nullable(),
   "companyUrl": stringType().nullish(),
   "isActive": booleanType(),
-  "enabledModules": stringType()
+  "enabledModules": stringType(),
+  "isImpersonating": booleanType().optional(),
+  "impersonatorUsername": stringType().optional()
 });
 var listCompaniesResponseGstinRegExp = new RegExp("^[0-9]{2}[a-zA-Z0-9]{10}[a-zA-Z0-9][zZ][a-zA-Z0-9]?$");
 var ListCompaniesResponseItem = objectType({
@@ -60291,13 +60295,12 @@ var ListCompaniesResponseItem = objectType({
 });
 var ListCompaniesResponse = arrayType(ListCompaniesResponseItem);
 var createCompanyBodyGstinRegExp = new RegExp("^[0-9]{2}[a-zA-Z0-9]{10}[a-zA-Z0-9][zZ][a-zA-Z0-9]?$");
-var companyUrlVerifyRegExp = new RegExp("^$|^verify\\.[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
 var CreateCompanyBody = objectType({
   "name": stringType(),
   "email": stringType(),
   "address": stringType(),
   "gstin": stringType().regex(createCompanyBodyGstinRegExp).nullish(),
-  "companyUrl": stringType().regex(companyUrlVerifyRegExp, "Domain must use 'verify' subdomain (e.g. verify.company.com)").nullish(),
+  "companyUrl": stringType().nullish(),
   "pan": stringType().nullish(),
   "cin": stringType().nullish(),
   "msmeRegistrationNo": stringType().nullish(),
@@ -60325,7 +60328,7 @@ var GetMyCompanyResponse = objectType({
   "createdAt": coerce.date()
 });
 var UpdateMyCompanyBody = objectType({
-  "companyUrl": stringType().regex(companyUrlVerifyRegExp, "Domain must use 'verify' subdomain (e.g. verify.company.com)").nullish()
+  "companyUrl": stringType().nullish()
 });
 var updateMyCompanyResponseGstinRegExp = new RegExp("^[0-9]{2}[a-zA-Z0-9]{10}[a-zA-Z0-9][zZ][a-zA-Z0-9]?$");
 var UpdateMyCompanyResponse = objectType({
@@ -60526,7 +60529,6 @@ var ListLocationsResponseItem = objectType({
 });
 var ListLocationsResponse = arrayType(ListLocationsResponseItem);
 var CreateLocationBody = objectType({
-  "companyId": numberType().nullish(),
   "locationType": stringType(),
   "uniqueName": stringType(),
   "locationName": stringType(),
@@ -60698,7 +60700,8 @@ var GetProductReportResponseItem = objectType({
   "size": stringType(),
   "total": numberType(),
   "mapped": numberType(),
-  "unmapped": numberType()
+  "unmapped": numberType(),
+  "createdAt": stringType()
 });
 var GetProductReportResponse = arrayType(GetProductReportResponseItem);
 var GetShipperSummaryQueryParams = objectType({
@@ -66688,7 +66691,15 @@ router2.post("/auth/login", async (req, res) => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.username, parsed.data.username));
+  const loginIdentifier = (parsed.data.username || req.body?.email || "").trim();
+  const cleanIdentifier = loginIdentifier.toLowerCase();
+  const [user] = await db.select().from(usersTable).where(
+    or(
+      eq(usersTable.username, loginIdentifier),
+      sql`lower(${usersTable.username}) = ${cleanIdentifier}`,
+      sql`lower(${usersTable.email}) = ${cleanIdentifier}`
+    )
+  );
   if (!user) {
     res.status(401).json({ error: "Invalid credentials" });
     return;
@@ -67138,12 +67149,20 @@ router2.post("/auth/passkey/register-verify", async (req, res) => {
 });
 router2.post("/auth/passkey/login-options", async (req, res) => {
   const { username } = req.body;
-  if (!username) {
-    res.status(400).json({ error: "Username is required for passkey login" });
+  if (!username || typeof username !== "string" || !username.trim()) {
+    res.status(400).json({ error: "Username or email is required for passkey login" });
     return;
   }
+  const rawUsername = username.trim();
+  const cleanUsername = rawUsername.toLowerCase();
   try {
-    const [user] = await db.select().from(usersTable).where(eq(usersTable.username, username));
+    const [user] = await db.select().from(usersTable).where(
+      or(
+        eq(usersTable.username, rawUsername),
+        sql`lower(${usersTable.username}) = ${cleanUsername}`,
+        sql`lower(${usersTable.email}) = ${cleanUsername}`
+      )
+    );
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;

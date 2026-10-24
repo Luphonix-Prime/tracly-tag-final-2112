@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
-import { eq, or, and } from "drizzle-orm";
+import { eq, or, and, sql } from "drizzle-orm";
 import { db, usersTable, companiesTable, passkeysTable, deviceCodesTable, systemConfigsTable, passwordResetsTable } from "@workspace/db";
 import { LoginBody, LoginResponse, RegisterBody } from "@workspace/api-zod";
 import crypto from "crypto";
@@ -102,10 +102,19 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
+  const loginIdentifier = ((parsed.data as any).username || (req.body as any)?.email || "").trim();
+  const cleanIdentifier = loginIdentifier.toLowerCase();
+
   const [user] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.username, parsed.data.username));
+    .where(
+      or(
+        eq(usersTable.username, loginIdentifier),
+        sql`lower(${usersTable.username}) = ${cleanIdentifier}`,
+        sql`lower(${usersTable.email}) = ${cleanIdentifier}`
+      )
+    );
 
   if (!user) {
     res.status(401).json({ error: "Invalid credentials" });
@@ -653,16 +662,25 @@ router.post("/auth/passkey/register-verify", async (req, res): Promise<void> => 
 
 router.post("/auth/passkey/login-options", async (req, res): Promise<void> => {
   const { username } = req.body;
-  if (!username) {
-    res.status(400).json({ error: "Username is required for passkey login" });
+  if (!username || typeof username !== "string" || !username.trim()) {
+    res.status(400).json({ error: "Username or email is required for passkey login" });
     return;
   }
+
+  const rawUsername = username.trim();
+  const cleanUsername = rawUsername.toLowerCase();
 
   try {
     const [user] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.username, username));
+      .where(
+        or(
+          eq(usersTable.username, rawUsername),
+          sql`lower(${usersTable.username}) = ${cleanUsername}`,
+          sql`lower(${usersTable.email}) = ${cleanUsername}`
+        )
+      );
 
     if (!user) {
       res.status(404).json({ error: "User not found" });

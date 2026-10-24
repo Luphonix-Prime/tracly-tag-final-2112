@@ -68021,12 +68021,51 @@ function isValidGtin(gtin) {
 function pad(value, len) {
   return String(value).padStart(len, "0");
 }
-function formatExpiry(d) {
-  const date2 = typeof d === "string" ? new Date(d) : d;
-  const yy = String(date2.getUTCFullYear() % 100).padStart(2, "0");
-  const mm = pad(date2.getUTCMonth() + 1, 2);
-  const dd = pad(date2.getUTCDate(), 2);
-  return `${yy}${mm}${dd}`;
+function toYYMMDD(d) {
+  if (!d) return "";
+  if (typeof d === "string") {
+    const s = d.trim();
+    if (/^\d{6}$/.test(s)) return s;
+    const m1 = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+    if (m1) {
+      const dd = m1[1].padStart(2, "0");
+      const months = {
+        jan: "01",
+        feb: "02",
+        mar: "03",
+        apr: "04",
+        may: "05",
+        jun: "06",
+        jul: "07",
+        aug: "08",
+        sep: "09",
+        oct: "10",
+        nov: "11",
+        dec: "12"
+      };
+      const mm = months[m1[2].toLowerCase()] || "01";
+      const yy = m1[3].slice(-2);
+      return `${yy}${mm}${dd}`;
+    }
+    const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+      const yy = isoMatch[1].slice(-2);
+      const mm = isoMatch[2];
+      const dd = isoMatch[3];
+      return `${yy}${mm}${dd}`;
+    }
+  }
+  try {
+    const date2 = typeof d === "string" ? new Date(d) : d;
+    if (date2 && !isNaN(date2.getTime())) {
+      const yy = String(date2.getUTCFullYear() % 100).padStart(2, "0");
+      const mm = pad(date2.getUTCMonth() + 1, 2);
+      const dd = pad(date2.getUTCDate(), 2);
+      return `${yy}${mm}${dd}`;
+    }
+  } catch {
+  }
+  return "";
 }
 function makeSerial() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -68049,10 +68088,20 @@ function makeRandomDigits(count2) {
   return out;
 }
 function generateUnitCode(input) {
-  const padded = input.gtin.length === 13 ? "0" + input.gtin : input.gtin;
-  const expiry = formatExpiry(input.expiry);
   const serial2 = makeSerial();
-  const raw = `01${padded}21${serial2}${FNC1}10${input.batch}${FNC1}17${expiry}`;
+  const expiry = input.expiry ? toYYMMDD(input.expiry) : "";
+  const mfg = input.mfgDate ? toYYMMDD(input.mfgDate) : "";
+  if (input.gtin && isValidGtin(input.gtin)) {
+    const padded = input.gtin.length === 13 ? "0" + input.gtin : input.gtin;
+    let raw2 = `01${padded}21${serial2}${FNC1}10${input.batch}`;
+    if (mfg) raw2 += `${FNC1}11${mfg}`;
+    if (expiry) raw2 += `${FNC1}17${expiry}`;
+    return { raw: raw2, serial: serial2 };
+  }
+  let raw = `10${input.batch}${FNC1}`;
+  if (mfg) raw += `11${mfg}${FNC1}`;
+  if (expiry) raw += `17${expiry}${FNC1}`;
+  raw += `21${serial2}`;
   return { raw, serial: serial2 };
 }
 function generateSsccCode(companyPrefix, _seq) {
@@ -68067,7 +68116,26 @@ function generateSsccCode(companyPrefix, _seq) {
 }
 function parseGs1Code(rawCode) {
   const result = {};
-  let i = 0;
+  if (!rawCode) return result;
+  if (rawCode.includes("(") && rawCode.includes(")")) {
+    const m00 = rawCode.match(/\(00\)([^()]+)/);
+    if (m00) result.ssccCode = m00[1];
+    const m01 = rawCode.match(/\(01\)([^()]+)/);
+    if (m01 && /^\d{8,14}$/.test(m01[1])) {
+      result.gtin = m01[1];
+    }
+    const m10 = rawCode.match(/\(10\)([^()]+)/);
+    if (m10) result.batch = m10[1];
+    const m11 = rawCode.match(/\(11\)([^()]+)/);
+    if (m11) result.mfgDate = m11[1];
+    const m17 = rawCode.match(/\(17\)([^()]+)/);
+    if (m17) result.expiry = m17[1];
+    const m21 = rawCode.match(/\(21\)([^()]+)/);
+    if (m21) result.serialNumber = m21[1];
+    if (result.gtin || result.batch || result.serialNumber || result.ssccCode) {
+      return result;
+    }
+  }
   const normalized = rawCode.replace(/<GS>/g, "|").replace(/\u001d/g, "|").replace(/\u00e8/g, "|");
   let pos = 0;
   while (pos < normalized.length) {
@@ -68077,7 +68145,10 @@ function parseGs1Code(rawCode) {
       result.ssccCode = normalized.substring(pos, pos + 18);
       pos += 18;
     } else if (ai === "01") {
-      result.gtin = normalized.substring(pos, pos + 14);
+      const gtinVal = normalized.substring(pos, pos + 14);
+      if (/^\d{8,14}$/.test(gtinVal)) {
+        result.gtin = gtinVal;
+      }
       pos += 14;
     } else if (ai === "17") {
       const yymmdd = normalized.substring(pos, pos + 6);
@@ -68088,19 +68159,14 @@ function parseGs1Code(rawCode) {
       pos += 6;
       result.mfgDate = yymmdd;
     } else if (ai === "10") {
-      const nextSep = normalized.indexOf("|", pos);
-      const nextAi = Math.min(
-        nextSep > 0 ? nextSep : normalized.length,
-        normalized.search(/^[0-9]{2}[^|]/) === -1 ? normalized.length : normalized.substring(pos).search(/\|/) > 0 ? pos + normalized.substring(pos).search(/\|/) : normalized.length
-      );
       let batchEnd = normalized.length;
-      for (let j = pos; j < normalized.length - 2; j++) {
+      for (let j = pos; j < normalized.length; j++) {
         if (normalized.substring(j, j + 1) === "|") {
           batchEnd = j;
           break;
         }
       }
-      result.batch = normalized.substring(pos, batchEnd).replace("|", "");
+      result.batch = normalized.substring(pos, batchEnd).replace(/\|/g, "");
       pos = batchEnd + 1;
     } else if (ai === "21") {
       let serialEnd = normalized.length;
@@ -68110,7 +68176,7 @@ function parseGs1Code(rawCode) {
           break;
         }
       }
-      result.serialNumber = normalized.substring(pos, serialEnd);
+      result.serialNumber = normalized.substring(pos, serialEnd).replace(/\|/g, "");
       pos = serialEnd + 1;
     } else {
       const nextSep = normalized.indexOf("|", pos);
@@ -68593,30 +68659,6 @@ var batches_default = router7;
 // src/routes/codes.ts
 var import_express8 = __toESM(require_express2(), 1);
 init_drizzle_orm();
-function gstinToGtin(input) {
-  if (!input) return "00000000000000";
-  const clean = input.replace(/\D/g, "");
-  if (clean.length === 13 || clean.length === 14) {
-    const padded2 = clean.padStart(14, "0").slice(0, 14);
-    const digits = padded2.slice(0, 13).split("").map(Number);
-    let sum3 = 0;
-    for (let i = 0; i < 13; i++) {
-      const weight = i % 2 === 0 ? 3 : 1;
-      sum3 += digits[i] * weight;
-    }
-    const checkDigit2 = (10 - sum3 % 10) % 10;
-    return padded2.slice(0, 13) + checkDigit2;
-  }
-  const padded = clean.padEnd(13, "0").slice(0, 13);
-  const nums = padded.split("").map(Number);
-  let sum2 = 0;
-  for (let i = 0; i < 13; i++) {
-    const weight = i % 2 === 0 ? 3 : 1;
-    sum2 += nums[i] * weight;
-  }
-  const cd = (10 - sum2 % 10) % 10;
-  return padded + cd;
-}
 var router8 = (0, import_express8.Router)();
 router8.get("/codes/debug/recent", async (_req, res) => {
   try {
@@ -69130,6 +69172,7 @@ router8.get("/codes", requireAuth, requireGenerateOrMapCodes, async (req, res) =
     createdAt: codesTable.createdAt,
     mfgDate: batchesTable.mfgDate,
     expiryDate: batchesTable.expiryDate,
+    gtin: productsTable.gtin,
     marketedBy: productsTable.marketedBy,
     registrationNo: productsTable.registrationNo,
     companyName: companiesTable.name,
@@ -69169,68 +69212,38 @@ router8.post("/codes", requireAuth, requireModule("generate_codes"), async (req,
   const isUnitLevel = ["unit", "l1", "l2"].includes(parsed.data.level);
   const generationTime = (/* @__PURE__ */ new Date()).toISOString();
   const inserts = [];
+  const hasValidGtin = Boolean(batch.gtin && isValidGtin(batch.gtin));
+  const expiryValue = batch.batchExpiryDate || batch.productExpiryDate || "";
+  const mfgValue = batch.batchMfgDate || "";
   for (let i = 0; i < parsed.data.quantity; i++) {
     if (isUnitLevel) {
-      const gtinOrGst = batch.companyGstin || batch.gtin;
-      if (batch.isGs1Compliant && gtinOrGst) {
-        const gtinValue = gstinToGtin(gtinOrGst);
-        const expiryValue = batch.batchExpiryDate || batch.productExpiryDate || "";
-        const { raw, serial: serial2 } = generateUnitCode({
-          gtin: gtinValue,
-          expiry: expiryValue,
-          batch: batch.batchNumber
-        });
-        inserts.push({
-          productId: batch.productId,
-          batchId: batch.id,
-          level: parsed.data.level,
-          rawString: raw,
-          serialNumber: serial2,
-          ssccCode: null,
-          createdAt: generationTime
-        });
-      } else {
-        const crypto4 = await import("crypto");
-        const serial2 = crypto4.randomBytes(6).toString("hex").toUpperCase();
-        inserts.push({
-          productId: batch.productId,
-          batchId: batch.id,
-          level: parsed.data.level,
-          rawString: serial2,
-          serialNumber: serial2,
-          ssccCode: null,
-          createdAt: generationTime
-        });
-      }
+      const { raw, serial: serial2 } = generateUnitCode({
+        gtin: hasValidGtin ? batch.gtin : null,
+        expiry: expiryValue,
+        mfgDate: mfgValue,
+        batch: batch.batchNumber
+      });
+      inserts.push({
+        productId: batch.productId,
+        batchId: batch.id,
+        level: parsed.data.level,
+        rawString: raw,
+        serialNumber: serial2,
+        ssccCode: null,
+        createdAt: generationTime
+      });
     } else {
-      const gtinOrGst = batch.companyGstin || batch.gtin;
-      if (batch.isGs1Compliant && gtinOrGst) {
-        const gtinValue = gstinToGtin(gtinOrGst);
-        const prefixToUse = batch.companyPrefix || gtinValue.slice(1, 8) || "8901234";
-        const { raw, sscc } = generateSsccCode(prefixToUse, i);
-        inserts.push({
-          productId: batch.productId,
-          batchId: batch.id,
-          level: parsed.data.level,
-          rawString: raw,
-          serialNumber: null,
-          ssccCode: sscc,
-          createdAt: generationTime
-        });
-      } else {
-        const crypto4 = await import("crypto");
-        const serial2 = crypto4.randomBytes(8).toString("hex").toUpperCase();
-        const sscc = `SH-${serial2}`;
-        inserts.push({
-          productId: batch.productId,
-          batchId: batch.id,
-          level: parsed.data.level,
-          rawString: sscc,
-          serialNumber: null,
-          ssccCode: sscc,
-          createdAt: generationTime
-        });
-      }
+      const prefixToUse = batch.companyPrefix || (hasValidGtin && batch.gtin.length >= 8 ? batch.gtin.slice(1, 8) : "8901234");
+      const { raw, sscc } = generateSsccCode(prefixToUse, i);
+      inserts.push({
+        productId: batch.productId,
+        batchId: batch.id,
+        level: parsed.data.level,
+        rawString: raw,
+        serialNumber: null,
+        ssccCode: sscc,
+        createdAt: generationTime
+      });
     }
   }
   const inserted = await db.insert(codesTable).values(inserts).returning();

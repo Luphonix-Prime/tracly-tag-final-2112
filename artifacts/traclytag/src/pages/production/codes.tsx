@@ -80,6 +80,42 @@ function fixSsccCheckDigit(sscc: string): string {
   return digitsOnly.slice(0, 17) + checkDigit;
 }
 
+function toYYMMDD(d?: string | Date | null): string {
+  if (!d) return "";
+  if (typeof d === "string") {
+    const s = d.trim();
+    if (/^\d{6}$/.test(s)) return s;
+    const m1 = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+    if (m1) {
+      const dd = m1[1]!.padStart(2, "0");
+      const months: Record<string, string> = {
+        jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+        jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12"
+      };
+      const mm = months[m1[2]!.toLowerCase()] || "01";
+      const yy = m1[3]!.slice(-2);
+      return `${yy}${mm}${dd}`;
+    }
+    const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+      const yy = isoMatch[1]!.slice(-2);
+      const mm = isoMatch[2]!;
+      const dd = isoMatch[3]!;
+      return `${yy}${mm}${dd}`;
+    }
+  }
+  try {
+    const dateObj = typeof d === "string" ? new Date(d) : d;
+    if (dateObj && !isNaN(dateObj.getTime())) {
+      const yy = String(dateObj.getFullYear() % 100).padStart(2, "0");
+      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const dd = String(dateObj.getDate()).padStart(2, "0");
+      return `${yy}${mm}${dd}`;
+    }
+  } catch {}
+  return "";
+}
+
 function DataMatrixBarcode({ 
   rawString, 
   size, 
@@ -109,9 +145,19 @@ function DataMatrixBarcode({
           const validSscc = fixSsccCheckDigit(parsed.sscc);
           barcodeText = `(00)${validSscc}`;
           barcodeType = "gs1datamatrix";
-        } else if (parsed.gtin) {
+        } else if (parsed.gtin && /^\d{8,14}$/.test(parsed.gtin)) {
+          // Path 1: Valid GTIN Available
           const validGtin = fixGtinCheckDigit(parsed.gtin);
-          barcodeText = `(01)${validGtin}(21)${parsed.serial || ""}(10)${parsed.batch || ""}(17)${parsed.expiry || ""}`;
+          const mfgPart = parsed.mfg ? `(11)${toYYMMDD(parsed.mfg)}` : "";
+          const expPart = parsed.expiry ? `(17)${toYYMMDD(parsed.expiry)}` : "";
+          barcodeText = `(01)${validGtin}(21)${parsed.serial || ""}(10)${parsed.batch || ""}${mfgPart}${expPart}`;
+          barcodeType = "gs1datamatrix";
+        } else {
+          // Path 2: Without GTIN (Fix as per TracelyTag QR Architecture):
+          // (01) is removed. Encodes (10) Batch, (11) Mfg, (17) Expiry, (21) Serial
+          const mfgPart = parsed.mfg ? `(11)${toYYMMDD(parsed.mfg)}` : "";
+          const expPart = parsed.expiry ? `(17)${toYYMMDD(parsed.expiry)}` : "";
+          barcodeText = `(10)${parsed.batch || ""}${mfgPart}${expPart}(21)${parsed.serial || ""}`;
           barcodeType = "gs1datamatrix";
         }
       }
@@ -155,15 +201,16 @@ function parseGs1Raw(raw: string) {
     return { sscc: cleanSscc };
   }
   
-  // Parentheses format e.g. (01)27AABCD1234E1Z5(21)HTKBNT7C9(10)PCM2604A(17)280430
-  if (raw.includes("(01)") || raw.includes("(21)") || raw.includes("(10)") || raw.includes("(17)")) {
+  // Parentheses format e.g. (10)PCM2604A(11)260401(17)280430(21)W6K5H7F6Z or (01)...
+  if (raw.includes("(") && raw.includes(")")) {
     let gtin = "";
     let serial = "";
     let batch = "";
     let expiry = "";
     let mfg = "";
     const m01 = raw.match(/\(01\)([^()]+)/);
-    if (m01) gtin = m01[1];
+    // GTIN must be strictly 8-14 digits, never GSTIN
+    if (m01 && /^\d{8,14}$/.test(m01[1])) gtin = m01[1];
     const m21 = raw.match(/\(21\)([^()]+)/);
     if (m21) serial = m21[1];
     const m10 = raw.match(/\(10\)([^()]+)/);
@@ -173,7 +220,7 @@ function parseGs1Raw(raw: string) {
     const m11 = raw.match(/\(11\)([^()]+)/);
     if (m11) mfg = m11[1];
 
-    if (gtin || serial || batch || expiry) {
+    if (gtin || serial || batch || expiry || mfg) {
       return { gtin, serial, batch, expiry, mfg };
     }
   }
@@ -193,19 +240,23 @@ function parseGs1Raw(raw: string) {
     pos += 2;
     if (ai === "01") {
       const nextPipe = clean.indexOf("|", pos);
+      let gtinVal = "";
       if (nextPipe > -1) {
-        gtin = clean.substring(pos, nextPipe);
+        gtinVal = clean.substring(pos, nextPipe);
         pos = nextPipe + 1;
       } else {
         const rest = clean.substring(pos);
         const matchNext = rest.match(/(21|10|17|11)/);
         if (matchNext && matchNext.index !== undefined && matchNext.index > 0) {
-          gtin = rest.substring(0, matchNext.index);
+          gtinVal = rest.substring(0, matchNext.index);
           pos += matchNext.index;
         } else {
-          gtin = rest.substring(0, 14);
+          gtinVal = rest.substring(0, 14);
           pos += 14;
         }
+      }
+      if (/^\d{8,14}$/.test(gtinVal)) {
+        gtin = gtinVal;
       }
     } else if (ai === "21") {
       const nextPipe = clean.indexOf("|", pos);
@@ -230,7 +281,7 @@ function parseGs1Raw(raw: string) {
         pos = nextPipe + 1;
       } else {
         const rest = clean.substring(pos);
-        const matchNext = rest.match(/(17|11)/);
+        const matchNext = rest.match(/(21|17|11)/);
         if (matchNext && matchNext.index !== undefined && matchNext.index > 0) {
           batch = rest.substring(0, matchNext.index);
           pos += matchNext.index;
@@ -263,7 +314,7 @@ function formatCustomDate(inputDate?: string | Date | null, fallbackDate?: strin
 
   const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-  // 1. If it's a 6-digit GS1 date string YYMMDD (e.g. "271231" or "210116")
+  // 1. If it's a 6-digit GS1 date string YYMMDD (e.g. "260401" or "280430")
   if (typeof d === "string" && /^\d{6}$/.test(d.trim())) {
     const trimmed = d.trim();
     const yy = trimmed.substring(0, 2);
@@ -275,7 +326,7 @@ function formatCustomDate(inputDate?: string | Date | null, fallbackDate?: strin
     }
   }
 
-  // 2. If it's already in DD-MMM-YY format (e.g. "16-JAN-21")
+  // 2. If it's already in DD-MMM-YY format (e.g. "01-APR-26")
   if (typeof d === "string" && /^\d{2}-[A-Za-z]{3}-\d{2}$/.test(d.trim())) {
     return d.trim().toUpperCase();
   }
@@ -310,19 +361,19 @@ const getCustomFormattedCodeLink = (code: any) => {
   const raw = code.rawString || "";
   const parsed = parseGs1Raw(raw);
   
-  // 1. GST / GTIN
-  const gstNo = parsed.gtin || code.companyGstin || "27AAAAA0000A1Z5";
+  // GSTIN kept in business profile/separate
+  const gstNo = code.companyGstin || "";
 
-  // 2. Batch No
-  const batchNo = parsed.batch || code.batchNumber || "BN-2026-OCT-01";
+  // Batch No
+  const batchNo = parsed.batch || code.batchNumber || "PCM2604A";
 
-  // 3. Manufacturing Date (DD-MMM-YY, e.g. 16-JAN-21 or 15-APR-26 matching 2nd img)
+  // Manufacturing Date (DD-MMM-YY)
   let mfgDate = formatCustomDate(parsed.mfg, code.mfgDate || code.createdAt);
   if (!mfgDate) {
     mfgDate = format(new Date(), "dd-MMM-yy").toUpperCase();
   }
 
-  // 4. Expiry Date (DD-MMM-YY, e.g. 15-JAN-22 or 31-DEC-27 matching 2nd img)
+  // Expiry Date (DD-MMM-YY)
   let expDate = formatCustomDate(parsed.expiry, code.expiryDate);
   if (!expDate) {
     const fallbackExp = new Date();
@@ -330,17 +381,18 @@ const getCustomFormattedCodeLink = (code: any) => {
     expDate = format(fallbackExp, "dd-MMM-yy").toUpperCase();
   }
 
-  // 5. Serial No
-  const serialNo = parsed.serial || code.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "5491794546E0");
+  // Serial No
+  const serialNo = parsed.serial || code.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "W6K5H7F6Z");
 
-  // If batchNo itself contains hyphens (e.g., BN-2026-oct-12), using hyphen-delimited string breaks into unexpected number of parts.
-  // We sanitize hyphenated components or fallback to clean serialNo for single-part representation.
   const cleanBatch = batchNo.replace(/-/g, "");
-  return `${gstNo}-${cleanBatch}-${mfgDate}-${expDate}-${serialNo}`;
+  return gstNo 
+    ? `${gstNo}-${cleanBatch}-${mfgDate}-${expDate}-${serialNo}`
+    : `${cleanBatch}-${mfgDate}-${expDate}-${serialNo}`;
 };
 
 const getProductString = (
   raw: string, 
+  gtin?: string,
   companyGstin?: string, 
   fallbackBatch?: string, 
   fallbackSerial?: string, 
@@ -353,14 +405,21 @@ const getProductString = (
     return `(00)${validSscc}`;
   }
 
-  const displayGtin = parsed.gtin || companyGstin || "27AAAAA0000A1Z5";
-  const serialNum = parsed.serial || fallbackSerial || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "102DE11E894C");
-  const batchNum = parsed.batch || fallbackBatch || "";
+  const rawGtin = (parsed.gtin && /^\d{8,14}$/.test(parsed.gtin)) ? parsed.gtin : (gtin && /^\d{8,14}$/.test(gtin) ? gtin : "");
+  const serialNum = parsed.serial || fallbackSerial || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "W6K5H7F6Z");
+  const batchNum = parsed.batch || fallbackBatch || "PCM2604A";
   
-  const mfgFormatted = formatCustomDate(parsed.mfg, fallbackMfg);
-  const expFormatted = formatCustomDate(parsed.expiry, fallbackExpiry);
+  const mfgYY = toYYMMDD(parsed.mfg || fallbackMfg);
+  const expYY = toYYMMDD(parsed.expiry || fallbackExpiry);
 
-  return `(01)${displayGtin}${batchNum ? `-(10)${batchNum}` : ""}${mfgFormatted ? `-(11)${mfgFormatted}` : ""}${expFormatted ? `-(17)${expFormatted}` : ""}-(21)${serialNum}`;
+  // Path 1: With Valid GTIN
+  if (rawGtin) {
+    return `(01)${rawGtin}${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
+  }
+
+  // Path 2: Without GTIN (Fix as per TracelyTag QR Architecture)
+  // (01) is omitted. Encodes (10) Batch, (11) Mfg, (17) Expiry, (21) Serial
+  return `${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
 };
 
 const renderGs1Text = (codeObj: any, onCopy: () => void) => {
@@ -380,43 +439,83 @@ const renderGs1Text = (codeObj: any, onCopy: () => void) => {
     );
   }
 
-  const displayGtin = parsed.gtin || companyGstin || "29ABCDE1234F1Z5";
-  const serialNum = parsed.serial || codeObj.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "AC22F9A7C436");
-  const batchNum = parsed.batch || codeObj.batchNumber || "";
+  // Check for genuine numeric GTIN (never GSTIN!)
+  const rawGtin = (parsed.gtin && /^\d{8,14}$/.test(parsed.gtin)) ? parsed.gtin : (codeObj.gtin && /^\d{8,14}$/.test(codeObj.gtin) ? codeObj.gtin : "");
+  const serialNum = parsed.serial || codeObj.serialNumber || (raw && !raw.startsWith("00") && !raw.startsWith("(01)") && !raw.startsWith("INVALID_") ? raw : "W6K5H7F6Z");
+  const batchNum = parsed.batch || codeObj.batchNumber || "PCM2604A";
 
-  let expiryDateRaw = parsed.expiry || "";
-  if (!expiryDateRaw && codeObj.expiryDate) {
-    try {
-      expiryDateRaw = format(new Date(codeObj.expiryDate), "yyMMdd");
-    } catch {
-      expiryDateRaw = "";
-    }
-  }
+  const mfgYY = toYYMMDD(parsed.mfg || codeObj.mfgDate || codeObj.createdAt);
+  const expYY = toYYMMDD(parsed.expiry || codeObj.expiryDate);
 
-  const mfgFormatted = formatCustomDate(parsed.mfg, codeObj.mfgDate || codeObj.createdAt);
-  const expFormatted = formatCustomDate(parsed.expiry, codeObj.expiryDate);
+  const mfgDisplay = formatCustomDate(parsed.mfg, codeObj.mfgDate || codeObj.createdAt);
+  const expDisplay = formatCustomDate(parsed.expiry, codeObj.expiryDate);
 
-  const productString = `(01)${displayGtin}-${batchNum ? `(10)${batchNum}-` : ""}${mfgFormatted ? `(11)${mfgFormatted}-` : ""}${expFormatted ? `(17)${expFormatted}-` : ""}(21)${serialNum}`;
+  const productString = rawGtin
+    ? `(01)${rawGtin}${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`
+    : `${batchNum ? `(10)${batchNum}` : ""}${mfgYY ? `(11)${mfgYY}` : ""}${expYY ? `(17)${expYY}` : ""}(21)${serialNum}`;
 
   return (
     <div className="text-[11px] font-mono text-slate-900 text-left space-y-0.5 w-full leading-tight">
-      {/* (01) line with copy icon aligned right */}
-      <div className="flex items-center justify-between gap-1">
-        <span className="font-bold">{displayGtin ? `(01)${displayGtin}` : ""}</span>
-        <button
-          type="button"
-          onClick={onCopy}
-          className="text-slate-400 hover:text-blue-600 p-0.5 rounded cursor-pointer transition-colors shrink-0"
-          title="Copy raw DataMatrix code"
-        >
-          <Copy className="h-4 w-4" />
-        </button>
-      </div>
-      {serialNum && <div className="font-bold">(21){serialNum}</div>}
-      {batchNum && <div className="font-bold">(10){batchNum}</div>}
-      {expiryDateRaw && <div className="font-bold">(17){expiryDateRaw}</div>}
+      {/* If GTIN is available, show (01) line */}
+      {rawGtin ? (
+        <div className="flex items-center justify-between gap-1">
+          <span className="font-bold text-blue-700">(01){rawGtin}</span>
+          <button
+            type="button"
+            onClick={onCopy}
+            className="text-slate-400 hover:text-blue-600 p-0.5 rounded cursor-pointer transition-colors shrink-0"
+            title="Copy raw DataMatrix code"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-1 mb-1">
+          {companyGstin ? (
+            <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded">
+              GSTIN: {companyGstin}
+            </span>
+          ) : (
+            <span className="text-[10px] text-slate-400 italic">Without GTIN</span>
+          )}
+          <button
+            type="button"
+            onClick={onCopy}
+            className="text-slate-400 hover:text-blue-600 p-0.5 rounded cursor-pointer transition-colors shrink-0"
+            title="Copy raw DataMatrix code"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
-      {/* Horizontal divider line & Product string */}
+      {/* GS1 AIs */}
+      {batchNum && (
+        <div className="font-bold flex items-center justify-between">
+          <span>(10){batchNum}</span>
+          <span className="text-[9px] font-normal text-slate-400">Batch/Lot</span>
+        </div>
+      )}
+      {mfgYY && (
+        <div className="font-bold flex items-center justify-between">
+          <span>(11){mfgYY}</span>
+          <span className="text-[9px] font-normal text-slate-400">{mfgDisplay || "Production Date"}</span>
+        </div>
+      )}
+      {expYY && (
+        <div className="font-bold flex items-center justify-between">
+          <span>(17){expYY}</span>
+          <span className="text-[9px] font-normal text-slate-400">{expDisplay || "Expiry Date"}</span>
+        </div>
+      )}
+      {serialNum && (
+        <div className="font-bold flex items-center justify-between">
+          <span>(21){serialNum}</span>
+          <span className="text-[9px] font-normal text-slate-400">Serial Number</span>
+        </div>
+      )}
+
+      {/* Divider & Full Product String */}
       <div className="border-t border-slate-200/80 my-1.5 pt-1.5 text-[10px] text-slate-600 font-mono break-all leading-normal">
         <span className="font-semibold text-slate-500">Product string: </span>
         <span className="font-bold text-slate-800">{productString}</span>
@@ -424,6 +523,7 @@ const renderGs1Text = (codeObj: any, onCopy: () => void) => {
     </div>
   );
 };
+
 
 // Helper function for building barcode URLs removed in favor of local client-side bwip-js rendering
 

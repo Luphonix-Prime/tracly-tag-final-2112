@@ -204,13 +204,17 @@ export default function MappingCode() {
           }
           if (searchSerial.includes("-")) {
             const parts = searchSerial.split("-");
-            const serialIndex = parts.findIndex(p => p.startsWith("21"));
-            if (serialIndex > -1) {
-              searchSerial = parts.slice(serialIndex).join("-").substring(2);
+            if (parts.length >= 4 && parts[parts.length - 1] && parts[parts.length - 1].length >= 6) {
+              searchSerial = parts[parts.length - 1];
             } else {
-              const ssccIndex = parts.findIndex(p => p.startsWith("00"));
-              if (ssccIndex > -1) {
-                searchSerial = parts.slice(ssccIndex).join("-").substring(2);
+              const serialIndex = parts.findIndex(p => p.startsWith("21"));
+              if (serialIndex > -1) {
+                searchSerial = parts.slice(serialIndex).join("-").substring(2);
+              } else {
+                const ssccIndex = parts.findIndex(p => p.startsWith("00"));
+                if (ssccIndex > -1) {
+                  searchSerial = parts.slice(ssccIndex).join("-").substring(2);
+                }
               }
             }
           } else if (searchSerial.includes("(21)")) {
@@ -1139,13 +1143,17 @@ export default function MappingCode() {
                             }
                             if (searchSerial.includes("-")) {
                               const parts = searchSerial.split("-");
-                              const serialIndex = parts.findIndex(p => p.startsWith("21"));
-                              if (serialIndex > -1) {
-                                searchSerial = parts.slice(serialIndex).join("-").substring(2);
+                              if (parts.length >= 4 && parts[parts.length - 1] && parts[parts.length - 1].length >= 6) {
+                                searchSerial = parts[parts.length - 1];
                               } else {
-                                const ssccIndex = parts.findIndex(p => p.startsWith("00"));
-                                if (ssccIndex > -1) {
-                                  searchSerial = parts.slice(ssccIndex).join("-").substring(2);
+                                const serialIndex = parts.findIndex(p => p.startsWith("21"));
+                                if (serialIndex > -1) {
+                                  searchSerial = parts.slice(serialIndex).join("-").substring(2);
+                                } else {
+                                  const ssccIndex = parts.findIndex(p => p.startsWith("00"));
+                                  if (ssccIndex > -1) {
+                                    searchSerial = parts.slice(ssccIndex).join("-").substring(2);
+                                  }
                                 }
                               }
                             } else if (searchSerial.includes("(21)")) {

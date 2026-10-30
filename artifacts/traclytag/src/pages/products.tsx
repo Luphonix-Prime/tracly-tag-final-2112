@@ -298,12 +298,14 @@ export default function Products() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-end h-full">
+        <div className="flex flex-col">
+          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Filter</label>
           <Button variant="outline" className="p-2.5 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 cursor-pointer">
             <Filter className="h-4 w-4 text-[#434655]" />
           </Button>
         </div>
-        <div className="flex items-end h-full ml-auto">
+        <div className="flex flex-col ml-auto">
+          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Export</label>
           <Button variant="outline" className="flex items-center gap-2 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 font-bold text-[#0F172A] px-4 cursor-pointer">
             <Download className="h-4 w-4" /> Export XLSX
           </Button>

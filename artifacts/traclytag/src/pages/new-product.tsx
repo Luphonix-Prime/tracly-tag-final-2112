@@ -587,14 +587,14 @@ export default function NewProduct() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="unit"
                     render={({ field }) => (
                       <FormItem className="space-y-1.5">
                         <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          UNIT OF MEASUREMENT
+                          PACKAGING TYPE
                         </FormLabel>
                         <Select 
                           onValueChange={field.onChange} 
@@ -623,6 +623,60 @@ export default function NewProduct() {
 
                   <FormField
                     control={form.control}
+                    name="weightUnit"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1.5">
+                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+                          WEIGHT / VOLUME UNIT
+                        </FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || "g"}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#2563EB] focus:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all h-[42px]">
+                              <SelectValue placeholder="Select Weight / Volume Unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="g">Grams (g)</SelectItem>
+                            <SelectItem value="kg">Kilograms (kg)</SelectItem>
+                            <SelectItem value="ml">Millilitres (ml)</SelectItem>
+                            <SelectItem value="l">Litres (L)</SelectItem>
+                            <SelectItem value="mg">Milligrams (mg)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="weightValue"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1.5">
+                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+                          WEIGHT / VOLUME VALUE
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number"
+                            placeholder="e.g. 500" 
+                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all"
+                            {...field} 
+                            value={field.value ?? ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
                     name="mrp"
                     render={({ field }) => (
                       <FormItem className="space-y-1.5">
@@ -631,7 +685,7 @@ export default function NewProduct() {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">&#8377;</span>
                             <Input 
                               type="number"
                               placeholder="0.00" 
@@ -862,154 +916,9 @@ export default function NewProduct() {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="gstRate"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          GST RATE (%)
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            placeholder="e.g. 18" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all"
-                            {...field} 
-                            value={field.value ?? ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="weightValue"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          WEIGHT / VOLUME VALUE
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            placeholder="e.g. 500" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all"
-                            {...field} 
-                            value={field.value ?? ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
-                  <FormField
-                    control={form.control}
-                    name="weightUnit"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          WEIGHT / VOLUME UNIT
-                        </FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          value={field.value || "g"}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#2563EB] focus:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all h-[42px]">
-                              <SelectValue placeholder="Select Weight / Volume Unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="g">Grams (g)</SelectItem>
-                            <SelectItem value="kg">Kilograms (kg)</SelectItem>
-                            <SelectItem value="ml">Millilitres (ml)</SelectItem>
-                            <SelectItem value="l">Litres (L)</SelectItem>
-                            <SelectItem value="mg">Milligrams (mg)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="packagingType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          PACKAGING TYPE
-                        </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#2563EB] focus:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all h-auto">
-                              <SelectValue placeholder="Select Type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Bottle">Bottle</SelectItem>
-                            <SelectItem value="Can">Can</SelectItem>
-                            <SelectItem value="Carton">Carton</SelectItem>
-                            <SelectItem value="Pouch">Pouch</SelectItem>
-                            <SelectItem value="Jar">Jar</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="shelfLifeDays"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          SHELF LIFE (DAYS)
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            placeholder="e.g. 365" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all"
-                            {...field} 
-                            value={field.value ?? ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="countryOfOrigin"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
-                          COUNTRY OF ORIGIN
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="IND" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all uppercase font-mono"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
             </section>
           </div>

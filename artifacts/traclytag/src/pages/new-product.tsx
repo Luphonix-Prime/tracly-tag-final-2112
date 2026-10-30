@@ -150,7 +150,7 @@ export default function NewProduct() {
       countryOfOrigin: "IND",
       isGs1Compliant: false,
       l1Size: 0,
-      l2Size: 100,
+      l2Size: 0,
       shipperSize: 0,
       cautionLogoUrl: "Flammable",
       productLogoUrl: "",
@@ -779,7 +779,7 @@ export default function NewProduct() {
                         <FormLabel className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
                           MARKETED BY
                         </FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <Select disabled={isEdit} onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#2563EB] focus:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all h-[42px]">
                               <SelectValue placeholder="Select company" />

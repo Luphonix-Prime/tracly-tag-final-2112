@@ -320,14 +320,6 @@ export default function Products() {
             <span className="text-[18px] font-semibold text-[#0F172A]">Product Master</span>
             <span className="bg-[#ededf9] text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">Active</span>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-500">
-              <span className="material-symbols-outlined">filter_list</span>
-            </button>
-            <button className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-500">
-              <span className="material-symbols-outlined">download</span>
-            </button>
-          </div>
         </div>
         <div className="overflow-x-auto">
           <Table className="w-full text-left table-fixed">
@@ -337,22 +329,21 @@ export default function Products() {
                 <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">NAME</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[15%] text-[11px] font-bold px-6 py-4 uppercase">GTIN / GST</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase text-right">MRP</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">PACK (L1/L2/SHIPPER)</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase">EXPIRY</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">PACK (L1/SHIPPER)</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase text-right">ACTIONS</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-[#E2E8F0]">
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-[#434655]">
+                  <TableCell colSpan={6} className="text-center py-8 text-[#434655]">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#2563EB] mb-2" />
                     <span>Loading products master...</span>
                   </TableCell>
                 </TableRow>
               ) : filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-slate-400">
+                  <TableCell colSpan={6} className="text-center py-12 text-slate-400">
                     <div className="flex flex-col items-center gap-2">
                       <Package className="h-8 w-8 text-slate-300" />
                       <p className="text-[14px] font-semibold text-slate-500">No products found matching criteria</p>
@@ -367,7 +358,6 @@ export default function Products() {
                     </TableCell>
                     <TableCell className="align-middle px-6 py-5">
                       <span className="font-bold text-[#0F172A] text-[14px] block">{product.name}</span>
-                      <span className="text-[12px] font-semibold text-slate-500 block mt-0.5">{product.skuSize}</span>
                     </TableCell>
                     <TableCell className="align-middle px-6 py-5">
                       <span className="font-mono text-[13px] font-semibold tracking-wider text-slate-600">
@@ -382,12 +372,7 @@ export default function Products() {
                       <span className="font-bold text-[#0F172A] text-[14px]">₹{product.mrp.toFixed(2)}</span>
                     </TableCell>
                     <TableCell className="align-middle px-6 py-5">
-                      <span className="text-[14px] font-medium text-slate-600">{product.l1Size} / {product.l2Size} / {product.shipperSize}</span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5">
-                      <span className="text-[13px] font-medium text-slate-600">
-                        {product.expiryDate ? format(new Date(product.expiryDate), "MMM d, yyyy") : "-"}
-                      </span>
+                      <span className="text-[14px] font-medium text-slate-600">{product.l1Size} / {product.shipperSize}</span>
                     </TableCell>
                     <TableCell className="align-middle px-6 py-5 text-right flex items-center justify-end gap-1">
                       <button 
@@ -397,30 +382,6 @@ export default function Products() {
                       >
                         <Edit className="h-5 w-5" />
                       </button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <button className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer">
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white border border-[#E2E8F0]">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="text-lg font-bold text-[#0F172A]">Delete product</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm text-[#434655]">
-                              Permanently remove {product.name}. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(product.id)}
-                              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))

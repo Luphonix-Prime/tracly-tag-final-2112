@@ -137,7 +137,7 @@ export default function Locations() {
       </div>
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-[30px] leading-[36px] font-bold text-[#0F172A] tracking-[-0.02em]">Factory Listing</h2>
+          <h2 className="text-[30px] leading-[36px] font-bold text-[#0F172A] tracking-[-0.02em]">Factory Location</h2>
           <p className="text-[16px] text-slate-600 mt-1">Manage physical company nodes, warehouses, and assembly lines.</p>
         </div>
 

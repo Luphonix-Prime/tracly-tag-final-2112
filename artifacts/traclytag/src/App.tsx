@@ -226,8 +226,7 @@ function Router() {
       <Route path="/locations/:id/edit"><ProtectedRoute component={NewLocation} /></Route>
       <Route path="/production/batches"><ProtectedRoute component={Batches} /></Route>
       <Route path="/production/batches/new"><ProtectedRoute component={NewBatch} /></Route>
-      <Route path="/production/batches/:id/edit"><ProtectedRoute component={NewBatch} /></Route>
-      <Route path="/production/codes"><ProtectedRoute component={Codes} /></Route>
+            <Route path="/production/codes"><ProtectedRoute component={Codes} /></Route>
       <Route path="/production/codes/new"><ProtectedRoute component={GenerateCodes} /></Route>
       <Route path="/mapping-code"><ProtectedRoute component={MappingCode} /></Route>
       <Route path="/customer-scan"><ProtectedRoute component={CustomerScan} /></Route>

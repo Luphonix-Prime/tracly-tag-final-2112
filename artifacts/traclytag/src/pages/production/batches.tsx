@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useListBatches, getListBatchesQueryKey, useCreateBatch, useDeleteBatch, useListProducts } from "@workspace/api-client-react";
+import { useListBatches, getListBatchesQueryKey, useCreateBatch, useListProducts } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Trash2, Plus, Layers, CalendarIcon, ChevronRight, Search, Filter, Download, Loader2, Edit } from "lucide-react";
+import { Plus, Layers, CalendarIcon, ChevronRight, Search, Filter, Download, Loader2, X } from "lucide-react";
+import { exportXlsx } from "@/lib/csv";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,11 +32,15 @@ export default function Batches() {
   const [, setLocation] = useLocation();
   const [filterProductId, setFilterProductId] = useState<number | undefined>();
   const [search, setSearch] = useState("");
+  const [mfgFrom, setMfgFrom] = useState("");
+  const [mfgTo, setMfgTo] = useState("");
+  const [expiryFrom, setExpiryFrom] = useState("");
+  const [expiryTo, setExpiryTo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const { data: products = [] } = useListProducts();
   const { data: batches = [], isLoading } = useListBatches({ productId: filterProductId });
   
   const createBatch = useCreateBatch();
-  const deleteBatch = useDeleteBatch();
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -71,23 +75,69 @@ export default function Batches() {
     });
   };
 
-  const handleDelete = (id: number) => {
-    deleteBatch.mutate({ id }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getListBatchesQueryKey() });
-        toast.success("Batch deleted successfully");
-      },
-      onError: (error: any) => {
-        toast.error(error?.data?.error || "Failed to delete batch. It may be in use.");
-      }
-    });
+  const activeFilterCount = [
+    Boolean(search),
+    Boolean(filterProductId),
+    Boolean(mfgFrom),
+    Boolean(mfgTo),
+    Boolean(expiryFrom),
+    Boolean(expiryTo),
+  ].filter(Boolean).length;
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setFilterProductId(undefined);
+    setMfgFrom("");
+    setMfgTo("");
+    setExpiryFrom("");
+    setExpiryTo("");
   };
 
-  const filteredBatches = batches.filter(b => 
-    !search || 
-    b.batchNumber.toLowerCase().includes(search.toLowerCase()) ||
-    (b.productName && b.productName.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredBatches = batches.filter(b => {
+    const matchesSearch = !search ||
+      b.batchNumber.toLowerCase().includes(search.toLowerCase()) ||
+      (b.productName && b.productName.toLowerCase().includes(search.toLowerCase()));
+
+    const matchesProduct = !filterProductId || b.productId === filterProductId;
+
+    let matchesMfg = true;
+    if (b.mfgDate) {
+      const bDate = b.mfgDate.slice(0, 10);
+      if (mfgFrom && bDate < mfgFrom) matchesMfg = false;
+      if (mfgTo && bDate > mfgTo) matchesMfg = false;
+    } else if (mfgFrom || mfgTo) {
+      matchesMfg = false;
+    }
+
+    let matchesExpiry = true;
+    if (b.expiryDate) {
+      const eDate = b.expiryDate.slice(0, 10);
+      if (expiryFrom && eDate < expiryFrom) matchesExpiry = false;
+      if (expiryTo && eDate > expiryTo) matchesExpiry = false;
+    } else if (expiryFrom || expiryTo) {
+      matchesExpiry = false;
+    }
+
+    return matchesSearch && matchesProduct && matchesMfg && matchesExpiry;
+  });
+
+  const handleExportXlsx = () => {
+    if (!filteredBatches.length) {
+      toast.error("No batch records to export");
+      return;
+    }
+    const exportData = filteredBatches.map(b => ({
+      "Batch Number": b.batchNumber,
+      "Product Name": b.productName || "-", 
+      "Mfg Date": b.mfgDate ? format(new Date(b.mfgDate), "yyyy-MM-dd") : "-",
+      "Expiry Date": b.expiryDate ? format(new Date(b.expiryDate), "yyyy-MM-dd") : "-",
+      "Status": "ACTIVATED",
+      "Created At": format(new Date(b.createdAt), "yyyy-MM-dd HH:mm"),
+    }));
+    const dateStr = format(new Date(), "yyyy-MM-dd");
+    exportXlsx(`batch-registry-${dateStr}.xlsx`, exportData);
+    toast.success(`Exported ${exportData.length} batch(es) to XLSX`);
+  };
 
   return (
     <div className="space-y-6">
@@ -112,44 +162,123 @@ export default function Batches() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex flex-wrap items-center gap-4 shadow-sm">
-        <div className="flex-1 min-w-[240px]">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Search Batch No.</label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737686]" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 pl-10 pr-4 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 font-mono outline-none transition-all"
-              placeholder="e.g. BTC-2024-X91"
-            />
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[240px]">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Search Batch No.</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737686]" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 pl-10 pr-4 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 font-mono outline-none transition-all placeholder:text-slate-400"
+                placeholder="e.g. BTC-2024-X91 or product name..."
+              />
+            </div>
+          </div>
+          <div className="flex-1 min-w-[240px]">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Product Context</label>
+            <Select value={filterProductId?.toString() || "all"} onValueChange={(val) => setFilterProductId(val === "all" ? undefined : parseInt(val))}>
+              <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 h-10 focus:ring-0 text-sm text-[#0F172A]">
+                <SelectValue placeholder="All Products" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Products</SelectItem>
+                {products.map(p => (
+                  <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Filter</label>
+            <Button
+              type="button"
+              variant={showFilters || (mfgFrom || mfgTo || expiryFrom || expiryTo) ? "default" : "outline"}
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "p-2.5 h-10 border transition-all cursor-pointer flex items-center gap-1.5",
+                showFilters || (mfgFrom || mfgTo || expiryFrom || expiryTo)
+                  ? "bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border-[#2563EB]"
+                  : "border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#434655]"
+              )}
+              title="Toggle date range filters"
+            >
+              <Filter className="h-4 w-4" />
+              {activeFilterCount > 0 && (
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white text-[#2563EB]">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+          </div>
+          <div className="flex flex-col ml-auto">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Export</label>
+            <Button
+              type="button"
+              onClick={handleExportXlsx}
+              variant="outline"
+              className="flex items-center gap-2 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 font-bold text-[#0F172A] px-4 cursor-pointer transition-all active:scale-95 shadow-sm"
+              title={`Export ${filteredBatches.length} filtered batch(es) to XLSX`}
+            >
+              <Download className="h-4 w-4 text-[#2563EB]" /> Export XLSX ({filteredBatches.length})
+            </Button>
           </div>
         </div>
-        <div className="flex-1 min-w-[240px]">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Product Context</label>
-          <Select value={filterProductId?.toString() || "all"} onValueChange={(val) => setFilterProductId(val === "all" ? undefined : parseInt(val))}>
-            <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 h-10 focus:ring-0 text-sm text-[#0F172A]">
-              <SelectValue placeholder="All Products" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Products</SelectItem>
-              {products.map(p => (
-                <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-end h-full">
-          <Button variant="outline" className="p-2.5 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 cursor-pointer">
-            <Filter className="h-4 w-4 text-[#434655]" />
-          </Button>
-        </div>
-        <div className="flex items-end h-full ml-auto">
-          <Button variant="outline" className="flex items-center gap-2 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 font-bold text-[#0F172A] px-4 cursor-pointer">
-            <Download className="h-4 w-4" /> Export XLSX
-          </Button>
-        </div>
+
+        {showFilters && (
+          <div className="pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end animate-in fade-in-50 duration-200">
+            <div>
+              <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Mfg Date From</label>
+              <input
+                type="date"
+                value={mfgFrom}
+                onChange={(e) => setMfgFrom(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Mfg Date To</label>
+              <input
+                type="date"
+                value={mfgTo}
+                onChange={(e) => setMfgTo(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Expiry Date From</label>
+              <input
+                type="date"
+                value={expiryFrom}
+                onChange={(e) => setExpiryFrom(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Expiry Date To</label>
+              <input
+                type="date"
+                value={expiryTo}
+                onChange={(e) => setExpiryTo(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all"
+              />
+            </div>
+            {activeFilterCount > 0 && (
+              <div className="col-span-full flex justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={clearAllFilters}
+                  className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center gap-1.5 h-8 px-3 rounded-lg cursor-pointer"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear All Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Data Table Container */}
@@ -158,14 +287,6 @@ export default function Batches() {
           <div className="flex items-center gap-3">
             <span className="text-[18px] font-semibold text-[#0F172A]">Batch Registry</span>
             <span className="bg-[#ededf9] text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">Active</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-500">
-              <span className="material-symbols-outlined">filter_list</span>
-            </button>
-            <button className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-500">
-              <span className="material-symbols-outlined">download</span>
-            </button>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -178,20 +299,19 @@ export default function Batches() {
                 <TableHead className="text-slate-500 tracking-wider w-[15%] text-[11px] font-bold px-6 py-4 uppercase">EXPIRY DATE</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase">STATUS</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[15%] text-[11px] font-bold px-6 py-4 uppercase">CREATED</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase text-right">ACTIONS</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-[#E2E8F0]">
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-[#434655]">
+                  <TableCell colSpan={6} className="text-center py-8 text-[#434655]">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#2563EB] mb-2" />
                     <span>Loading production batches...</span>
                   </TableCell>
                 </TableRow>
               ) : filteredBatches.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-slate-400">
+                  <TableCell colSpan={6} className="text-center py-12 text-slate-400">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Layers className="h-8 w-8 text-slate-300" />
                       <p className="text-[14px] font-semibold text-slate-500">No batches found matching criteria</p>
@@ -226,36 +346,6 @@ export default function Batches() {
                       <span className="text-[12px] font-semibold text-slate-500 tracking-wide">
                         {format(new Date(batch.createdAt), "MMM d, yyyy HH:mm")}
                       </span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5 text-right flex items-center justify-end gap-1">
-                      <button 
-                        onClick={() => setLocation(`/production/batches/${batch.id}/edit`)}
-                        className="p-2 text-slate-500 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-all cursor-pointer"
-                        title="Edit batch"
-                      >
-                        <Edit className="h-5 w-5" />
-                      </button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <button className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer">
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white border border-[#E2E8F0]">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="text-lg font-bold text-[#0F172A]">Delete Batch</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm text-[#434655]">
-                              Are you sure you want to delete batch {batch.batchNumber}? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(batch.id)} className="bg-red-600 hover:bg-red-700 text-white cursor-pointer">
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))

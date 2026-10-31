@@ -97,104 +97,12 @@ router.post("/batches", async (req, res): Promise<void> => {
   }
 });
 
-router.put("/batches/:id", async (req, res): Promise<void> => {
-  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const id = parseInt(rawId ?? "", 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
-  }
-
-  const [targetBatch] = await db
-    .select({ companyId: productsTable.companyId })
-    .from(batchesTable)
-    .innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
-    .where(eq(batchesTable.id, id));
-
-  if (!targetBatch) {
-    res.status(404).json({ error: "Batch not found" });
-    return;
-  }
-
-  if (req.user!.role !== "master" && req.user!.role !== "super_master") {
-    if (!req.user!.companyId || targetBatch.companyId !== req.user!.companyId) {
-      res.status(403).json({ error: "Forbidden: Cannot edit batches outside your assigned company" });
-      return;
-    }
-  }
-
-  const parsed = CreateBatchBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  try {
-    const [row] = await db
-      .update(batchesTable)
-      .set({
-        productId: parsed.data.productId,
-        batchNumber: parsed.data.batchNumber,
-        mfgDate: parsed.data.mfgDate.toISOString(),
-        expiryDate: parsed.data.expiryDate.toISOString(),
-      })
-      .where(eq(batchesTable.id, id))
-      .returning();
-
-    if (!row) {
-      res.status(404).json({ error: "Batch not found" });
-      return;
-    }
-
-    const [withProduct] = await db
-      .select({
-        id: batchesTable.id,
-        productId: batchesTable.productId,
-        productName: productsTable.name,
-        batchNumber: batchesTable.batchNumber,
-        mfgDate: batchesTable.mfgDate,
-        expiryDate: batchesTable.expiryDate,
-        createdAt: batchesTable.createdAt,
-      })
-      .from(batchesTable)
-      .innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
-      .where(eq(batchesTable.id, row.id));
-
-    res.json(withProduct);
-  } catch (err) {
-    req.log.error({ err }, "Batch update failed");
-    res.status(400).json({ error: "Batch number must be unique per product" });
-  }
+router.put("/batches/:id", async (_req, res): Promise<void> => {
+  res.status(403).json({ error: "Batches cannot be edited once created" });
 });
 
-router.delete("/batches/:id", async (req, res): Promise<void> => {
-  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const id = parseInt(raw ?? "", 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
-  }
-
-  const [targetBatch] = await db
-    .select({ companyId: productsTable.companyId })
-    .from(batchesTable)
-    .innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
-    .where(eq(batchesTable.id, id));
-
-  if (!targetBatch) {
-    res.status(404).json({ error: "Batch not found" });
-    return;
-  }
-
-  if (req.user!.role !== "master" && req.user!.role !== "super_master") {
-    if (!req.user!.companyId || targetBatch.companyId !== req.user!.companyId) {
-      res.status(403).json({ error: "Forbidden: Cannot delete batches outside your assigned company" });
-      return;
-    }
-  }
-
-  await db.delete(batchesTable).where(eq(batchesTable.id, id));
-  res.sendStatus(204);
+router.delete("/batches/:id", async (_req, res): Promise<void> => {
+  res.status(403).json({ error: "Batches cannot be deleted once created" });
 });
 
 export default router;

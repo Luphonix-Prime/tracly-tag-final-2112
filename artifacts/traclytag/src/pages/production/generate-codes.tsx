@@ -52,9 +52,33 @@ export default function GenerateCodes() {
   const selectedProductId = form.watch("productId");
 
   // Keep SKU ID and Product selection in sync
+  // When Product Name or SKU ID changes, update productId and filter/auto-select batch
   const handleProductChange = (val: number) => {
-    form.setValue("productId", val);
-    form.setValue("batchId", undefined as any); // Reset batch when product changes
+    form.setValue("productId", val, { shouldValidate: true });
+    // Check available batches for this product
+    const productBatches = batches.filter(b => b.productId === val);
+    if (productBatches.length === 1) {
+      // If exactly 1 batch exists, automatically select it
+      form.setValue("batchId", productBatches[0].id, { shouldValidate: true });
+    } else if (productBatches.length > 1) {
+      // Check if current batch belongs to new product
+      const currentBatchId = form.getValues("batchId");
+      const stillValid = productBatches.some(b => b.id === currentBatchId);
+      if (!stillValid) {
+        form.setValue("batchId", undefined as any, { shouldValidate: true });
+      }
+    } else {
+      form.setValue("batchId", undefined as any, { shouldValidate: true });
+    }
+  };
+
+  // When Batch is selected directly, automatically select its parent Product Name and SKU ID
+  const handleBatchChange = (batchIdVal: number) => {
+    form.setValue("batchId", batchIdVal, { shouldValidate: true });
+    const targetBatch = batches.find(b => b.id === batchIdVal);
+    if (targetBatch && targetBatch.productId) {
+      form.setValue("productId", targetBatch.productId, { shouldValidate: true });
+    }
   };
 
   const onSubmit = (values: GenerateForm) => {
@@ -150,7 +174,10 @@ export default function GenerateCodes() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {products.map(p => (
+                            {(selectedProductId
+                              ? products.filter(p => p.id === Number(selectedProductId))
+                              : products
+                            ).map(p => (
                               <SelectItem key={p.id} value={p.id.toString()}>{p.skuId} ({p.skuSize || "No Size"})</SelectItem>
                             ))}
                           </SelectContent>
@@ -170,9 +197,8 @@ export default function GenerateCodes() {
                           Batch No <span className="text-[#EF4444]">*</span>
                         </FormLabel>
                         <Select 
-                          onValueChange={(val) => field.onChange(Number(val))} 
+                          onValueChange={(val) => handleBatchChange(Number(val))}
                           value={field.value?.toString() || ""}
-                          disabled={!selectedProductId}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full bg-white border border-[#E2E8F0] h-11 rounded-lg focus:ring-0 text-sm text-[#0F172A] disabled:opacity-50 focus:border-[#2563EB]">
@@ -180,14 +206,20 @@ export default function GenerateCodes() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {batches
-                              .filter(b => b.productId === Number(selectedProductId))
-                              .map(b => (
+                            {(selectedProductId
+                              ? batches.filter(b => b.productId === Number(selectedProductId))
+                              : batches
+                            ).map(b => {
+                              const prod = products.find(p => p.id === b.productId);
+                              const label = !selectedProductId && prod
+                                ? `${b.batchNumber} (${prod.name})`
+                                : b.batchNumber;
+                              return (
                                 <SelectItem key={b.id} value={b.id.toString()}>
-                                  {b.batchNumber}
+                                  {label}
                                 </SelectItem>
-                              ))
-                            }
+                              );
+                            })}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -262,13 +294,6 @@ export default function GenerateCodes() {
                       <span className="material-symbols-outlined text-xl">rocket_launch</span>
                     )}
                     Generate Codes
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => setLocation("/production/codes")}
-                    className="w-full md:w-auto px-10 py-3 border border-[#737686] text-[#434655] bg-white hover:bg-slate-50 font-semibold rounded-lg transition-all h-11 cursor-pointer"
-                  >
-                    Back to History
                   </Button>
                 </div>
               </div>

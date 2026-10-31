@@ -1,3 +1,5 @@
+import * as XLSX from "xlsx";
+
 export function exportCsv(filename: string, rows: any[]) {
   if (!rows || !rows.length) return;
   const headers = Object.keys(rows[0]);
@@ -18,4 +20,13 @@ export function exportCsv(filename: string, rows: any[]) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export function exportXlsx(filename: string, rows: any[]) {
+  if (!rows || !rows.length) return;
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+  const actualFilename = filename.endsWith(".xlsx") ? filename : `${filename}.xlsx`;
+  XLSX.writeFile(workbook, actualFilename);
 }

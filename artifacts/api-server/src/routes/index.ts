@@ -10,6 +10,7 @@ import codesRouter from './codes.js';
 import reportsRouter from './reports.js';
 import uploadRouter from './upload.js';
 import subscriptionRouter from './subscription.js';
+import marketedByRouter from './marketedBy.js';
 import systemRouter from './system.js';
 
 const router: IRouter = Router();
@@ -25,6 +26,7 @@ router.use(codesRouter);
 router.use(reportsRouter);
 router.use(uploadRouter);
 router.use(subscriptionRouter);
+router.use(marketedByRouter);
 router.use(systemRouter);
 
 export default router;

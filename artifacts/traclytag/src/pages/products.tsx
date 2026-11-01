@@ -13,8 +13,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Trash2, Plus, Package, CalendarIcon, Upload, Loader2, ChevronRight, Search, Filter, Download, Edit } from "lucide-react";
+import { Trash2, Plus, Package, CalendarIcon, Upload, Loader2, ChevronRight, Search, Filter, Download, Edit, X } from "lucide-react";
 import { format } from "date-fns";
+import { exportXlsx } from "@/lib/csv";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -105,8 +106,12 @@ export default function Products() {
   // Search and filter states
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterMarketedBy, setFilterMarketedBy] = useState("All");
+  const [minMrp, setMinMrp] = useState("");
+  const [maxMrp, setMaxMrp] = useState("");
 
-  // Dynamically derive categories from existing products created by the company/team
+  // Dynamically derive categories and marketed-by values from existing products
   const availableCategories = Array.from(
     new Set(
       products
@@ -115,8 +120,33 @@ export default function Products() {
     )
   );
 
+  const availableMarketedBy = Array.from(
+    new Set(
+      products
+        .map((p: any) => p.marketedBy)
+        .filter((m: any): m is string => Boolean(m && String(m).trim()))
+    )
+  );
+
+  const activeFilterCount = [
+    Boolean(search),
+    category !== "All Categories",
+    filterMarketedBy !== "All",
+    Boolean(minMrp),
+    Boolean(maxMrp),
+  ].filter(Boolean).length;
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setCategory("All Categories");
+    setFilterMarketedBy("All");
+    setMinMrp("");
+    setMaxMrp("");
+  };
+
   const filteredProducts = products.filter((product: any) => {
-    const companyGstin = companies.find((c: any) => c.id === product.companyId)?.gstin || 
+    const companyGstin = (product as any).companyGstin || 
+      companies.find((c: any) => c.id === product.companyId)?.gstin || 
       (currentUser as any)?.companyGstin || 
       (currentUser as any)?.company?.gstin || 
       "";
@@ -132,8 +162,43 @@ export default function Products() {
     const matchesCategory =
       category === "All Categories" || productCategory.toLowerCase() === category.toLowerCase();
 
-    return matchesSearch && matchesCategory;
+    const matchesMarketedBy =
+      filterMarketedBy === "All" || product.marketedBy === filterMarketedBy;
+
+    const numMrp = Number(product.mrp);
+    const matchesMinMrp = !minMrp || numMrp >= Number(minMrp);
+    const matchesMaxMrp = !maxMrp || numMrp <= Number(maxMrp);
+
+    return matchesSearch && matchesCategory && matchesMarketedBy && matchesMinMrp && matchesMaxMrp;
   });
+
+  const handleExportXlsx = () => {
+    if (!filteredProducts.length) {
+      toast.error("No products to export");
+      return;
+    }
+    const exportRows = filteredProducts.map((p: any) => {
+      const gstin = p.companyGstin || 
+        companies.find((c: any) => c.id === p.companyId)?.gstin || 
+        (currentUser as any)?.companyGstin || 
+        (currentUser as any)?.company?.gstin || 
+        "-";
+      return {
+        "SKU ID": p.skuId,
+        "Product Name": p.name,
+        "Company GST / GTIN": gstin !== "-" ? gstin : (p.gtin || "-"),
+        "MRP (INR)": p.mrp ? `₹${Number(p.mrp).toFixed(2)}` : "-",
+        "Marketed By": p.marketedBy || "-",
+        "Packaging Type": p.packagingType || p.unit || "-",
+        "Weight / Volume": p.weightValue ? `${p.weightValue} ${p.weightUnit || ""}` : "-",
+        "Pack (L1 / Shipper)": `${p.l1Size ?? 0} / ${p.shipperSize ?? 0}`,
+        "HSN Code": p.hsnCode || "-",
+        "Registration No": p.registrationNo || "-",
+      };
+    });
+    exportXlsx(`products-master-${format(new Date(), "yyyy-MM-dd")}`, exportRows);
+    toast.success(`Exported ${exportRows.length} product(s) to Excel`);
+  };
 
   const handleUpload = (fieldName: "cautionLogoUrl" | "productLogoUrl" | "labelPdfUrl") => {
     const input = document.createElement("input");
@@ -268,51 +333,122 @@ export default function Products() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex flex-wrap items-center gap-4 shadow-sm">
-        <div className="flex-1 min-w-[240px]">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Search Product</label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737686]" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 pl-10 pr-4 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all"
-              placeholder="Search by SKU, Name, GTIN or GST..."
-            />
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[220px]">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Search Product</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737686]" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 pl-10 pr-4 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none transition-all h-10"
+                placeholder="Search by SKU, Name, GTIN or GST..."
+              />
+            </div>
+          </div>
+          <div className="w-[200px]">
+            <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Category</label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg h-10 focus:ring-0 focus:ring-offset-0 text-sm text-[#0F172A]">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Categories">All Categories</SelectItem>
+                {availableCategories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              type="button"
+              variant={showFilters ? "default" : "outline"}
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "h-10 px-3.5 border border-[#E2E8F0] transition-all flex items-center gap-2 cursor-pointer",
+                showFilters ? "bg-[#2563EB] text-white hover:bg-[#2563EB]/90" : "bg-white text-[#434655] hover:bg-slate-50"
+              )}
+              title="Toggle Advanced Filters"
+            >
+              <Filter className="h-4 w-4" />
+              {activeFilterCount > 0 && (
+                <span className="bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+            <Button 
+              onClick={handleExportXlsx}
+              variant="outline" 
+              className="flex items-center gap-2 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 font-bold text-[#0F172A] px-4 cursor-pointer"
+            >
+              <Download className="h-4 w-4 text-[#2563EB]" /> Export XLSX ({filteredProducts.length})
+            </Button>
           </div>
         </div>
-        <div className="flex-1 min-w-[240px]">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Category</label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 h-10 focus:ring-0 focus:ring-offset-0 text-sm text-[#0F172A]">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All Categories">All Categories</SelectItem>
-              {availableCategories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Filter</label>
-          <Button variant="outline" className="p-2.5 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 cursor-pointer">
-            <Filter className="h-4 w-4 text-[#434655]" />
-          </Button>
-        </div>
-        <div className="flex flex-col ml-auto">
-          <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest opacity-0 select-none">Export</label>
-          <Button variant="outline" className="flex items-center gap-2 h-10 border border-[#E2E8F0] bg-white hover:bg-slate-50 font-bold text-[#0F172A] px-4 cursor-pointer">
-            <Download className="h-4 w-4" /> Export XLSX
-          </Button>
-        </div>
+
+        {/* Collapsible Advanced Filters */}
+        {showFilters && (
+          <div className="pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4 items-end animate-in fade-in-50 duration-200">
+            <div>
+              <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Marketed By</label>
+              <Select value={filterMarketedBy} onValueChange={setFilterMarketedBy}>
+                <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg h-10 focus:ring-0 focus:ring-offset-0 text-sm text-[#0F172A]">
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Marketed Entities</SelectItem>
+                  {availableMarketedBy.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Min MRP (₹)</label>
+                <input
+                  type="number"
+                  value={minMrp}
+                  onChange={(e) => setMinMrp(e.target.value)}
+                  placeholder="Min"
+                  className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none h-10"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-[#737686] mb-1.5 block uppercase tracking-widest">Max MRP (₹)</label>
+                <input
+                  type="number"
+                  value={maxMrp}
+                  onChange={(e) => setMaxMrp(e.target.value)}
+                  placeholder="Max"
+                  className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-2 px-3 text-sm text-[#0F172A] focus:border-[#2563EB] focus:ring-0 outline-none h-10"
+                />
+              </div>
+            </div>
+            {activeFilterCount > 0 && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={clearAllFilters}
+                  className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center gap-1.5 h-10 px-3 rounded-lg cursor-pointer"
+                >
+                  <X className="h-3.5 w-3.5" /> Clear All Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Data Table Card */}
       {/* Data Table Container */}
       <div className="bg-white border border-[#E2E8F0] rounded-xl shadow-sm overflow-hidden">
         <div className="px-6 border-b border-[#E2E8F0] bg-[#faf8ff] flex items-center justify-between py-4">
@@ -325,11 +461,11 @@ export default function Products() {
           <Table className="w-full text-left table-fixed">
             <TableHeader>
               <TableRow className="border-b border-[#E2E8F0] bg-slate-50/50 hover:bg-slate-50/50">
-                <TableHead className="text-slate-500 tracking-wider w-[15%] text-[11px] font-bold px-6 py-4 uppercase">SKU</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">NAME</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[15%] text-[11px] font-bold px-6 py-4 uppercase">GTIN / GST</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase text-right">MRP</TableHead>
-                <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">PACK (L1/SHIPPER)</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[18%] text-[11px] font-bold px-6 py-4 uppercase">SKU</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[22%] text-[11px] font-bold px-6 py-4 uppercase">NAME</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[20%] text-[11px] font-bold px-6 py-4 uppercase">GST / GTIN</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[12%] text-[11px] font-bold px-6 py-4 uppercase text-right">MRP</TableHead>
+                <TableHead className="text-slate-500 tracking-wider w-[18%] text-[11px] font-bold px-6 py-4 uppercase">PACK (L1/SHIPPER)</TableHead>
                 <TableHead className="text-slate-500 tracking-wider w-[10%] text-[11px] font-bold px-6 py-4 uppercase text-right">ACTIONS</TableHead>
               </TableRow>
             </TableHeader>
@@ -351,40 +487,44 @@ export default function Products() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredProducts.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-slate-50 transition-colors group border-0">
-                    <TableCell className="align-middle px-6 py-5">
-                      <span className="font-semibold text-[#2563EB] text-[14px]">{product.skuId}</span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5">
-                      <span className="font-bold text-[#0F172A] text-[14px] block">{product.name}</span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5">
-                      <span className="font-mono text-[13px] font-semibold tracking-wider text-slate-600">
-                        {product.gtin || 
-                          companies.find((c: any) => c.id === product.companyId)?.gstin || 
-                          (currentUser as any)?.companyGstin || 
-                          (currentUser as any)?.company?.gstin || 
-                          "-"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5 text-right">
-                      <span className="font-bold text-[#0F172A] text-[14px]">₹{product.mrp.toFixed(2)}</span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5">
-                      <span className="text-[14px] font-medium text-slate-600">{product.l1Size} / {product.shipperSize}</span>
-                    </TableCell>
-                    <TableCell className="align-middle px-6 py-5 text-right flex items-center justify-end gap-1">
-                      <button 
-                        onClick={() => setLocation(`/products/${product.id}/edit`)}
-                        className="p-2 text-slate-500 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-all cursor-pointer"
-                        title="Edit product"
-                      >
-                        <Edit className="h-5 w-5" />
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                filteredProducts.map((product) => {
+                  const companyGstin = (product as any).companyGstin || 
+                    companies.find((c: any) => c.id === product.companyId)?.gstin || 
+                    (currentUser as any)?.companyGstin || 
+                    (currentUser as any)?.company?.gstin;
+                  const displayGstGtin = companyGstin || product.gtin || "-";
+
+                  return (
+                    <TableRow key={product.id} className="hover:bg-slate-50 transition-colors group border-0">
+                      <TableCell className="align-middle px-6 py-5">
+                        <span className="font-semibold text-[#2563EB] text-[14px]">{product.skuId}</span>
+                      </TableCell>
+                      <TableCell className="align-middle px-6 py-5">
+                        <span className="font-bold text-[#0F172A] text-[14px] block">{product.name}</span>
+                      </TableCell>
+                      <TableCell className="align-middle px-6 py-5">
+                        <span className="font-mono text-[13px] font-semibold tracking-wider text-slate-600">
+                          {displayGstGtin}
+                        </span>
+                      </TableCell>
+                      <TableCell className="align-middle px-6 py-5 text-right">
+                        <span className="font-bold text-[#0F172A] text-[14px]">₹{Number(product.mrp).toFixed(2)}</span>
+                      </TableCell>
+                      <TableCell className="align-middle px-6 py-5">
+                        <span className="text-[14px] font-medium text-slate-600">{product.l1Size ?? 0} / {product.shipperSize ?? 0}</span>
+                      </TableCell>
+                      <TableCell className="align-middle px-6 py-5 text-right flex items-center justify-end gap-1">
+                        <button 
+                          onClick={() => setLocation(`/products/${product.id}/edit`)}
+                          className="p-2 text-slate-500 hover:text-[#2563EB] hover:bg-blue-50 rounded-lg transition-all cursor-pointer"
+                          title="Edit product"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

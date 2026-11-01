@@ -8,7 +8,7 @@ import {
   getListProductsQueryKey,
   useListProducts,
 } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -82,6 +82,15 @@ export default function NewProduct() {
   const { data: products = [] } = useListProducts();
   const product = products.find(p => p.id === id);
 
+  const { data: marketedByList = [] } = useQuery<any[]>({
+    queryKey: ["/api/marketed-by"],
+    queryFn: async () => {
+      const res = await fetch("/api/marketed-by");
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
   const createProduct = useCreateProduct();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -136,7 +145,7 @@ export default function NewProduct() {
       skuId: "",
       name: "",
       skuSize: "",
-      marketedBy: "Tracely Global Logistics",
+      marketedBy: "",
       sapDescription: "",
       mrp: 0,
       registrationNo: "",
@@ -193,12 +202,6 @@ export default function NewProduct() {
       setDirtySections({});
     }
   }, [product, isEdit]);
-
-  useEffect(() => {
-    if (!isEdit && currentUser?.companyName && !isMaster) {
-      form.setValue("marketedBy", currentUser.companyName);
-    }
-  }, [currentUser, isMaster, form, isEdit]);
 
   useEffect(() => {
     if (isEdit) return;
@@ -401,11 +404,19 @@ export default function NewProduct() {
             >
               {isEdit ? "Back to Products" : "Discard"}
             </Button>
-            {!isEdit && (
+            {isEdit ? (
+              <Button
+                type="submit"
+                className="px-6 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/20 transition-all flex items-center gap-2 active:scale-95 h-11 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[20px] font-bold">save</span>
+                Update Product
+              </Button>
+            ) : (
               <Button
                 type="submit"
                 disabled={createProduct.isPending}
-                className="px-6 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/20 transition-all flex items-center gap-2 active:scale-95 h-11"
+                className="px-6 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#2563EB]/20 transition-all flex items-center gap-2 active:scale-95 h-11 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[20px] font-bold">save</span>
                 Save Product
@@ -553,8 +564,12 @@ export default function NewProduct() {
                         </FormLabel>
                         <FormControl>
                           <Input 
+                            disabled={isEdit}
                             placeholder="Enter formal product commercial name" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all placeholder:text-slate-400"
+                            className={cn(
+                              "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all placeholder:text-slate-400",
+                              isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                            )}
                             {...field} 
                           />
                         </FormControl>
@@ -597,6 +612,7 @@ export default function NewProduct() {
                           PACKAGING TYPE
                         </FormLabel>
                         <Select 
+                          disabled={isEdit}
                           onValueChange={field.onChange} 
                           value={field.value || "Piece"}
                         >
@@ -630,6 +646,7 @@ export default function NewProduct() {
                           WEIGHT / VOLUME UNIT
                         </FormLabel>
                         <Select 
+                          disabled={isEdit}
                           onValueChange={field.onChange} 
                           value={field.value || "g"}
                         >
@@ -661,9 +678,13 @@ export default function NewProduct() {
                         </FormLabel>
                         <FormControl>
                           <Input 
+                            disabled={isEdit}
                             type="number"
                             placeholder="e.g. 500" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all"
+                            className={cn(
+                              "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all",
+                              isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                            )}
                             {...field} 
                             value={field.value ?? ""}
                           />
@@ -761,8 +782,12 @@ export default function NewProduct() {
                         </FormLabel>
                         <FormControl>
                           <Input 
+                            disabled={isEdit}
                             placeholder="ISO/REG/9920/1" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all placeholder:text-slate-400"
+                            className={cn(
+                              "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all placeholder:text-slate-400",
+                              isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                            )}
                             {...field} 
                           />
                         </FormControl>
@@ -782,23 +807,17 @@ export default function NewProduct() {
                         <Select disabled={isEdit} onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger className="w-full bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#2563EB] focus:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all h-[42px]">
-                              <SelectValue placeholder="Select company" />
+                              <SelectValue placeholder="Select marketed by entity" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {companies.map((c) => (
-                              <SelectItem key={c.id} value={c.name}>
-                                {c.name}
+                            {marketedByList.map((m: any) => (
+                              <SelectItem key={m.id} value={m.name}>
+                                {m.name}
                               </SelectItem>
                             ))}
-                            {currentUser?.companyName && !companies.some((c) => c.name === currentUser.companyName) && (
-                              <SelectItem value={currentUser.companyName}>
-                                {currentUser.companyName}
-                              </SelectItem>
-                            )}
                             {field.value &&
-                              field.value !== currentUser?.companyName &&
-                              !companies.some((c) => c.name === field.value) && (
+                              !marketedByList.some((m: any) => m.name === field.value) && (
                                 <SelectItem value={field.value}>
                                   {field.value}
                                 </SelectItem>
@@ -816,6 +835,7 @@ export default function NewProduct() {
                     ANTIDOTE STATEMENT
                   </label>
                   <Textarea 
+                    disabled={isEdit}
                     placeholder="Specify emergency procedures and antidote requirements for hazardous handling..." 
                     rows={3}
                     value={antidote}
@@ -907,8 +927,12 @@ export default function NewProduct() {
                         </FormLabel>
                         <FormControl>
                           <Input 
+                            disabled={isEdit}
                             placeholder="e.g. 38089190" 
-                            className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all font-mono"
+                            className={cn(
+                              "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2.5 px-4 text-sm text-slate-900 transition-all font-mono",
+                              isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                            )}
                             {...field} 
                           />
                         </FormControl>
@@ -971,8 +995,12 @@ export default function NewProduct() {
                           <FormItem className="w-24">
                             <FormControl>
                               <Input 
+                                disabled={isEdit}
                                 type="number"
-                                className="bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 text-center font-semibold text-sm"
+                                className={cn(
+                                  "bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 text-center font-semibold text-sm",
+                                  isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                                )}
                                 {...field}
                               />
                             </FormControl>
@@ -994,10 +1022,14 @@ export default function NewProduct() {
                     <p className="text-xs text-slate-500 mb-1">How many shippers do you need?</p>
                     <div className="relative">
                       <Input 
+                        disabled={isEdit}
                         placeholder="Enter quantity"
                         value={shipperQty}
                         onChange={(e) => setShipperQty(e.target.value)}
-                        className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2 px-4 pr-12 text-sm text-slate-900 transition-all placeholder:text-slate-400"
+                        className={cn(
+                          "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2 px-4 pr-12 text-sm text-slate-900 transition-all placeholder:text-slate-400",
+                          isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                        )}
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">QTY</span>
                     </div>
@@ -1019,8 +1051,12 @@ export default function NewProduct() {
                           <FormItem className="w-24">
                             <FormControl>
                               <Input 
+                                disabled={isEdit}
                                 type="number"
-                                className="bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 text-center font-semibold text-sm"
+                                className={cn(
+                                  "bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 text-center font-semibold text-sm",
+                                  isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                                )}
                                 {...field}
                               />
                             </FormControl>
@@ -1042,10 +1078,14 @@ export default function NewProduct() {
                     <p className="text-xs text-slate-500 mb-1">How many pallets do you need?</p>
                     <div className="relative">
                       <Input 
+                        disabled={isEdit}
                         placeholder="Enter quantity"
                         value={palletQty}
                         onChange={(e) => setPalletQty(e.target.value)}
-                        className="w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2 px-4 pr-12 text-sm text-slate-900 transition-all placeholder:text-slate-400"
+                        className={cn(
+                          "w-full bg-[#F8FAFC] border-[#E2E8F0] focus-visible:border-[#2563EB] focus-visible:ring-0 rounded-lg py-2 px-4 pr-12 text-sm text-slate-900 transition-all placeholder:text-slate-400",
+                          isEdit && "bg-[#F1F5F9] text-slate-500 cursor-not-allowed"
+                        )}
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">QTY</span>
                     </div>

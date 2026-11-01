@@ -18,21 +18,33 @@ router.get("/products", async (req, res): Promise<void> => {
   const isMaster = req.user!.role === "master" || req.user!.role === "super_master";
   const rows = isMaster
     ? await db
-        .select()
+        .select({
+          product: productsTable,
+          companyGstin: companiesTable.gstin,
+          companyName: companiesTable.name,
+        })
         .from(productsTable)
+        .leftJoin(companiesTable, eq(productsTable.companyId, companiesTable.id))
         .orderBy(desc(productsTable.createdAt))
     : req.user!.companyId
       ? await db
-          .select()
+          .select({
+            product: productsTable,
+            companyGstin: companiesTable.gstin,
+            companyName: companiesTable.name,
+          })
           .from(productsTable)
+          .leftJoin(companiesTable, eq(productsTable.companyId, companiesTable.id))
           .where(eq(productsTable.companyId, req.user!.companyId))
           .orderBy(desc(productsTable.createdAt))
       : [];
   res.json(
     rows.map((r) => ({
-      ...r,
-      mrp: typeof r.mrp === "string" ? parseFloat(r.mrp) : r.mrp,
-      description: r.sapDescription || "",
+      ...r.product,
+      companyGstin: r.companyGstin || null,
+      companyName: r.companyName || null,
+      mrp: typeof r.product.mrp === "string" ? parseFloat(r.product.mrp) : r.product.mrp,
+      description: r.product.sapDescription || "",
     })),
   );
 });

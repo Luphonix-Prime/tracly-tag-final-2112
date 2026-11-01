@@ -70030,85 +70030,107 @@ router12.get("/marketed-by", async (req, res) => {
   res.json(rows);
 });
 router12.post("/marketed-by", async (req, res) => {
-  const parsed = marketedBySchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
-    return;
+  try {
+    const parsed = marketedBySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
+      return;
+    }
+    const isMaster = req.user.role === "master" || req.user.role === "super_master";
+    let targetCompanyId = isMaster ? parsed.data.companyId ?? null : req.user.companyId || parsed.data.companyId || null;
+    if (!targetCompanyId && !isMaster) {
+      res.status(403).json({ error: "No assigned parent company found for your user account." });
+      return;
+    }
+    if (targetCompanyId) {
+      const [comp] = await db.select({ id: companiesTable.id }).from(companiesTable).where(eq(companiesTable.id, Number(targetCompanyId)));
+      if (!comp) {
+        res.status(400).json({ error: `Parent company #${targetCompanyId} not found` });
+        return;
+      }
+    }
+    const [row] = await db.insert(marketedByTable).values({
+      companyId: targetCompanyId ? Number(targetCompanyId) : null,
+      name: parsed.data.name.trim(),
+      email: parsed.data.email || null,
+      phone: parsed.data.phone || null,
+      address: parsed.data.address || null,
+      gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
+      pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
+      cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
+      fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
+      drugLicenseNo: parsed.data.drugLicenseNo || null
+    }).returning();
+    res.status(201).json(row);
+  } catch (err) {
+    req.log?.error?.({ err }, "Failed to create marketed-by entity");
+    res.status(500).json({ error: err.message || "Failed to create entity" });
   }
-  const isMaster = req.user.role === "master" || req.user.role === "super_master";
-  let targetCompanyId = isMaster ? parsed.data.companyId : req.user.companyId;
-  if (!targetCompanyId && !isMaster) {
-    res.status(403).json({ error: "No assigned company found" });
-    return;
-  }
-  const [row] = await db.insert(marketedByTable).values({
-    companyId: targetCompanyId ? Number(targetCompanyId) : null,
-    name: parsed.data.name.trim(),
-    email: parsed.data.email || null,
-    phone: parsed.data.phone || null,
-    address: parsed.data.address || null,
-    gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
-    pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
-    cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
-    fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
-    drugLicenseNo: parsed.data.drugLicenseNo || null
-  }).returning();
-  res.status(201).json(row);
 });
 router12.put("/marketed-by/:id", async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    const parsed = marketedBySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
+      return;
+    }
+    const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
+    if (!existing) {
+      res.status(404).json({ error: "Record not found" });
+      return;
+    }
+    const isMaster = req.user.role === "master" || req.user.role === "super_master";
+    if (!isMaster && existing.companyId && req.user.companyId && existing.companyId !== req.user.companyId) {
+      res.status(403).json({ error: "Forbidden: Cannot edit record for another company" });
+      return;
+    }
+    const targetCompanyId = isMaster ? parsed.data.companyId !== void 0 ? parsed.data.companyId : existing.companyId : existing.companyId || req.user.companyId || null;
+    const [updated] = await db.update(marketedByTable).set({
+      companyId: targetCompanyId ? Number(targetCompanyId) : null,
+      name: parsed.data.name.trim(),
+      email: parsed.data.email || null,
+      phone: parsed.data.phone || null,
+      address: parsed.data.address || null,
+      gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
+      pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
+      cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
+      fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
+      drugLicenseNo: parsed.data.drugLicenseNo || null
+    }).where(eq(marketedByTable.id, id)).returning();
+    res.json(updated);
+  } catch (err) {
+    req.log?.error?.({ err }, "Failed to update marketed-by entity");
+    res.status(500).json({ error: err.message || "Failed to update entity" });
   }
-  const parsed = marketedBySchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
-    return;
-  }
-  const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
-  if (!existing) {
-    res.status(404).json({ error: "Record not found" });
-    return;
-  }
-  const isMaster = req.user.role === "master" || req.user.role === "super_master";
-  if (!isMaster && existing.companyId !== req.user.companyId) {
-    res.status(403).json({ error: "Forbidden: Cannot edit record for another company" });
-    return;
-  }
-  const targetCompanyId = isMaster ? parsed.data.companyId !== void 0 ? parsed.data.companyId : existing.companyId : existing.companyId;
-  const [updated] = await db.update(marketedByTable).set({
-    companyId: targetCompanyId ? Number(targetCompanyId) : null,
-    name: parsed.data.name.trim(),
-    email: parsed.data.email || null,
-    phone: parsed.data.phone || null,
-    address: parsed.data.address || null,
-    gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
-    pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
-    cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
-    fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
-    drugLicenseNo: parsed.data.drugLicenseNo || null
-  }).where(eq(marketedByTable.id, id)).returning();
-  res.json(updated);
 });
 router12.delete("/marketed-by/:id", async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
+    if (!existing) {
+      res.status(404).json({ error: "Record not found" });
+      return;
+    }
+    const isMaster = req.user.role === "master" || req.user.role === "super_master";
+    if (!isMaster && existing.companyId && req.user.companyId && existing.companyId !== req.user.companyId) {
+      res.status(403).json({ error: "Forbidden: Cannot delete record for another company" });
+      return;
+    }
+    await db.delete(marketedByTable).where(eq(marketedByTable.id, id));
+    res.sendStatus(204);
+  } catch (err) {
+    req.log?.error?.({ err }, "Failed to delete marketed-by entity");
+    res.status(500).json({ error: err.message || "Failed to delete entity" });
   }
-  const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
-  if (!existing) {
-    res.status(404).json({ error: "Record not found" });
-    return;
-  }
-  const isMaster = req.user.role === "master" || req.user.role === "super_master";
-  if (!isMaster && existing.companyId !== req.user.companyId) {
-    res.status(403).json({ error: "Forbidden: Cannot delete record for another company" });
-    return;
-  }
-  await db.delete(marketedByTable).where(eq(marketedByTable.id, id));
-  res.sendStatus(204);
 });
 var marketedBy_default = router12;
 

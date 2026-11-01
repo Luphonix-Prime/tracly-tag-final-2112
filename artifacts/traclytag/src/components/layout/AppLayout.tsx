@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { useMappingCodeVisibility } from "@/hooks/use-mapping-code-visibility";
 import { 
-  LayoutDashboard, Building2, Users, Package, MapPin, 
+  LayoutDashboard, Building2, Briefcase, Users, Package, MapPin, 
   Layers, QrCode, FileText, PackageCheck, BarChart3, ListOrdered, LogOut, Menu,
   Link as LinkIcon, ScanBarcode, Settings, HelpCircle, Lock, Copy, User, Terminal, Eye, UserCheck,
   Search, Bell, Plus
@@ -104,7 +104,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   ].filter(item => userModules.includes(item.module));
 
   const bottomNavigation = [
-    ...(isMasterOrAdmin ? [{ title: "Companies", href: "/companies", icon: Building2, module: "companies" }] : []),
+    ...(isMasterOrAdmin ? [
+      { title: "Companies", href: "/companies", icon: Building2, module: "companies" },
+      { title: "Marketed By", href: "/marketed-by", icon: Briefcase, module: "companies" },
+    ] : []),
     { title: "Users", href: "/users", icon: Users, module: "users" },
     { title: "Locations", href: "/locations", icon: MapPin, module: "locations" },
     { title: "Profile", href: "/profile", icon: User },

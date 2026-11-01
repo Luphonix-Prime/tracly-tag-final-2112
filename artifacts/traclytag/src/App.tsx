@@ -17,6 +17,7 @@ import Activate from "@/pages/activate";
 import { BrandedPortal } from "@/components/BrandedPortal";
 import Dashboard from "@/pages/dashboard";
 import Companies from "@/pages/companies";
+import MarketedByPage from "@/pages/marketed-by";
 import NewCompany from "@/pages/new-company";
 import Users from "@/pages/users";
 import NewUser from "@/pages/new-user";
@@ -121,6 +122,7 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   const getRequiredModule = (path: string): string | null => {
     if (path.startsWith("/dashboard")) return "dashboard";
     if (path.startsWith("/companies")) return "companies";
+    if (path.startsWith("/marketed-by")) return "companies";
     if (path.startsWith("/users")) return "users";
     if (path.startsWith("/products")) return "products";
     if (path.startsWith("/locations")) return "locations";
@@ -216,6 +218,7 @@ function Router() {
       <Route path="/companies"><ProtectedRoute component={Companies} /></Route>
       <Route path="/companies/new"><ProtectedRoute component={NewCompany} /></Route>
       <Route path="/companies/:id/edit"><ProtectedRoute component={NewCompany} /></Route>
+      <Route path="/marketed-by"><ProtectedRoute component={MarketedByPage} /></Route>
       <Route path="/users"><ProtectedRoute component={Users} /></Route>
       <Route path="/users/new"><ProtectedRoute component={NewUser} /></Route>
       <Route path="/products"><ProtectedRoute component={Products} /></Route>

@@ -20501,27 +20501,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router14;
+    module.exports = Router15;
     module.exports.Route = Route;
-    function Router14(options) {
-      if (!(this instanceof Router14)) {
-        return new Router14(options);
+    function Router15(options) {
+      if (!(this instanceof Router15)) {
+        return new Router15(options);
       }
       const opts = options || {};
-      function router14(req, res, next) {
-        router14.handle(req, res, next);
+      function router15(req, res, next) {
+        router15.handle(req, res, next);
       }
-      Object.setPrototypeOf(router14, this);
-      router14.caseSensitive = opts.caseSensitive;
-      router14.mergeParams = opts.mergeParams;
-      router14.params = {};
-      router14.strict = opts.strict;
-      router14.stack = [];
-      return router14;
+      Object.setPrototypeOf(router15, this);
+      router15.caseSensitive = opts.caseSensitive;
+      router15.mergeParams = opts.mergeParams;
+      router15.params = {};
+      router15.strict = opts.strict;
+      router15.stack = [];
+      return router15;
     }
-    Router14.prototype = function() {
+    Router15.prototype = function() {
     };
-    Router14.prototype.param = function param2(name2, fn) {
+    Router15.prototype.param = function param2(name2, fn) {
       if (!name2) {
         throw new TypeError("argument name is required");
       }
@@ -20541,7 +20541,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router14.prototype.handle = function handle(req, res, callback) {
+    Router15.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20668,7 +20668,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router14.prototype.use = function use(handler) {
+    Router15.prototype.use = function use(handler) {
       let offset = 0;
       let path4 = "/";
       if (typeof handler !== "function") {
@@ -20701,7 +20701,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router14.prototype.route = function route(path4) {
+    Router15.prototype.route = function route(path4) {
       const route2 = new Route(path4);
       const layer = new Layer(path4, {
         sensitive: this.caseSensitive,
@@ -20716,7 +20716,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router14.prototype[method] = function(path4) {
+      Router15.prototype[method] = function(path4) {
         const route = this.route(path4);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -20899,13 +20899,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router14 = require_router();
+    var Router15 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router14 = null;
+      var router15 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -20914,13 +20914,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router14 === null) {
-            router14 = new Router14({
+          if (router15 === null) {
+            router15 = new Router15({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router14;
+          return router15;
         }
       });
     };
@@ -20991,15 +20991,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router14 = this.router;
+      var router15 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router14.use(path4, fn2);
+          return router15.use(path4, fn2);
         }
         debug(".use app under %s", path4);
         fn2.mountpath = path4;
         fn2.parent = this;
-        router14.use(path4, function mounted_app(req, res, next) {
+        router15.use(path4, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23572,7 +23572,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router14 = require_router();
+    var Router15 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23594,8 +23594,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router14.Route;
-    exports.Router = Router14;
+    exports.Route = Router15.Route;
+    exports.Router = Router15;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -52962,7 +52962,7 @@ var require_buffer_list = __commonJS({
     var Buffer2 = _require.Buffer;
     var _require2 = __require("util");
     var inspect = _require2.inspect;
-    var custom = inspect && inspect.custom || "inspect";
+    var custom2 = inspect && inspect.custom || "inspect";
     function copyBuffer(src, target, offset) {
       Buffer2.prototype.copy.call(src, target, offset);
     }
@@ -53117,7 +53117,7 @@ var require_buffer_list = __commonJS({
         }
         // Make sure the linked list only shows the minimal necessary information.
       }, {
-        key: custom,
+        key: custom2,
         value: function value(_, options) {
           return inspect(this, _objectSpread(_objectSpread({}, options), {}, {
             // Only inspect one level.
@@ -56335,16 +56335,128 @@ var require_multer = __commonJS({
 });
 
 // src/app.ts
-var import_express14 = __toESM(require_express2(), 1);
+var import_express15 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 var import_cookie_parser = __toESM(require_cookie_parser(), 1);
 
 // src/routes/index.ts
-var import_express13 = __toESM(require_express2(), 1);
+var import_express14 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
+
+// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
+var external_exports = {};
+__export(external_exports, {
+  BRAND: () => BRAND,
+  DIRTY: () => DIRTY,
+  EMPTY_PATH: () => EMPTY_PATH,
+  INVALID: () => INVALID,
+  NEVER: () => NEVER,
+  OK: () => OK,
+  ParseStatus: () => ParseStatus,
+  Schema: () => ZodType,
+  ZodAny: () => ZodAny,
+  ZodArray: () => ZodArray,
+  ZodBigInt: () => ZodBigInt,
+  ZodBoolean: () => ZodBoolean,
+  ZodBranded: () => ZodBranded,
+  ZodCatch: () => ZodCatch,
+  ZodDate: () => ZodDate,
+  ZodDefault: () => ZodDefault,
+  ZodDiscriminatedUnion: () => ZodDiscriminatedUnion,
+  ZodEffects: () => ZodEffects,
+  ZodEnum: () => ZodEnum,
+  ZodError: () => ZodError,
+  ZodFirstPartyTypeKind: () => ZodFirstPartyTypeKind,
+  ZodFunction: () => ZodFunction,
+  ZodIntersection: () => ZodIntersection,
+  ZodIssueCode: () => ZodIssueCode,
+  ZodLazy: () => ZodLazy,
+  ZodLiteral: () => ZodLiteral,
+  ZodMap: () => ZodMap,
+  ZodNaN: () => ZodNaN,
+  ZodNativeEnum: () => ZodNativeEnum,
+  ZodNever: () => ZodNever,
+  ZodNull: () => ZodNull,
+  ZodNullable: () => ZodNullable,
+  ZodNumber: () => ZodNumber,
+  ZodObject: () => ZodObject,
+  ZodOptional: () => ZodOptional,
+  ZodParsedType: () => ZodParsedType,
+  ZodPipeline: () => ZodPipeline,
+  ZodPromise: () => ZodPromise,
+  ZodReadonly: () => ZodReadonly,
+  ZodRecord: () => ZodRecord,
+  ZodSchema: () => ZodType,
+  ZodSet: () => ZodSet,
+  ZodString: () => ZodString,
+  ZodSymbol: () => ZodSymbol,
+  ZodTransformer: () => ZodEffects,
+  ZodTuple: () => ZodTuple,
+  ZodType: () => ZodType,
+  ZodUndefined: () => ZodUndefined,
+  ZodUnion: () => ZodUnion,
+  ZodUnknown: () => ZodUnknown,
+  ZodVoid: () => ZodVoid,
+  addIssueToContext: () => addIssueToContext,
+  any: () => anyType,
+  array: () => arrayType,
+  bigint: () => bigIntType,
+  boolean: () => booleanType,
+  coerce: () => coerce,
+  custom: () => custom,
+  date: () => dateType,
+  datetimeRegex: () => datetimeRegex,
+  defaultErrorMap: () => en_default,
+  discriminatedUnion: () => discriminatedUnionType,
+  effect: () => effectsType,
+  enum: () => enumType,
+  function: () => functionType,
+  getErrorMap: () => getErrorMap,
+  getParsedType: () => getParsedType,
+  instanceof: () => instanceOfType,
+  intersection: () => intersectionType,
+  isAborted: () => isAborted,
+  isAsync: () => isAsync,
+  isDirty: () => isDirty,
+  isValid: () => isValid,
+  late: () => late,
+  lazy: () => lazyType,
+  literal: () => literalType,
+  makeIssue: () => makeIssue,
+  map: () => mapType,
+  nan: () => nanType,
+  nativeEnum: () => nativeEnumType,
+  never: () => neverType,
+  null: () => nullType,
+  nullable: () => nullableType,
+  number: () => numberType,
+  object: () => objectType,
+  objectUtil: () => objectUtil,
+  oboolean: () => oboolean,
+  onumber: () => onumber,
+  optional: () => optionalType,
+  ostring: () => ostring,
+  pipeline: () => pipelineType,
+  preprocess: () => preprocessType,
+  promise: () => promiseType,
+  quotelessJson: () => quotelessJson,
+  record: () => recordType,
+  set: () => setType,
+  setErrorMap: () => setErrorMap,
+  strictObject: () => strictObjectType,
+  string: () => stringType,
+  symbol: () => symbolType,
+  transformer: () => effectsType,
+  tuple: () => tupleType,
+  undefined: () => undefinedType,
+  union: () => unionType,
+  unknown: () => unknownType,
+  util: () => util,
+  void: () => voidType
+});
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/util.js
 var util;
@@ -56499,6 +56611,10 @@ var ZodIssueCode = util.arrayToEnum([
   "not_multiple_of",
   "not_finite"
 ]);
+var quotelessJson = (obj) => {
+  const json2 = JSON.stringify(obj, null, 2);
+  return json2.replace(/"([^"]+)":/g, "$1:");
+};
 var ZodError = class _ZodError extends Error {
   get errors() {
     return this.issues;
@@ -56699,6 +56815,9 @@ var en_default = errorMap;
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
+function setErrorMap(map) {
+  overrideErrorMap = map;
+}
 function getErrorMap() {
   return overrideErrorMap;
 }
@@ -56729,6 +56848,7 @@ var makeIssue = (params) => {
     message: errorMessage
   };
 };
+var EMPTY_PATH = [];
 function addIssueToContext(ctx, issueData) {
   const overrideMap = getErrorMap();
   const issue = makeIssue({
@@ -60054,6 +60174,7 @@ ZodNaN.create = (params) => {
     ...processCreateParams(params)
   });
 };
+var BRAND = /* @__PURE__ */ Symbol("zod_brand");
 var ZodBranded = class extends ZodType {
   _parse(input) {
     const { ctx } = this._processInputParams(input);
@@ -60145,6 +60266,33 @@ ZodReadonly.create = (type, params) => {
     ...processCreateParams(params)
   });
 };
+function cleanParams(params, data) {
+  const p = typeof params === "function" ? params(data) : typeof params === "string" ? { message: params } : params;
+  const p2 = typeof p === "string" ? { message: p } : p;
+  return p2;
+}
+function custom(check, _params = {}, fatal) {
+  if (check)
+    return ZodAny.create().superRefine((data, ctx) => {
+      const r = check(data);
+      if (r instanceof Promise) {
+        return r.then((r2) => {
+          if (!r2) {
+            const params = cleanParams(_params, data);
+            const _fatal = params.fatal ?? fatal ?? true;
+            ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+          }
+        });
+      }
+      if (!r) {
+        const params = cleanParams(_params, data);
+        const _fatal = params.fatal ?? fatal ?? true;
+        ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+      }
+      return;
+    });
+  return ZodAny.create();
+}
 var late = {
   object: ZodObject.lazycreate
 };
@@ -60187,6 +60335,9 @@ var ZodFirstPartyTypeKind;
   ZodFirstPartyTypeKind2["ZodPipeline"] = "ZodPipeline";
   ZodFirstPartyTypeKind2["ZodReadonly"] = "ZodReadonly";
 })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
+var instanceOfType = (cls, params = {
+  message: `Input not instance of ${cls.name}`
+}) => custom((data) => data instanceof cls, params);
 var stringType = ZodString.create;
 var numberType = ZodNumber.create;
 var nanType = ZodNaN.create;
@@ -60221,6 +60372,9 @@ var optionalType = ZodOptional.create;
 var nullableType = ZodNullable.create;
 var preprocessType = ZodEffects.createWithPreprocess;
 var pipelineType = ZodPipeline.create;
+var ostring = () => stringType().optional();
+var onumber = () => numberType().optional();
+var oboolean = () => booleanType().optional();
 var coerce = {
   string: ((arg) => ZodString.create({ ...arg, coerce: true })),
   number: ((arg) => ZodNumber.create({ ...arg, coerce: true })),
@@ -60231,6 +60385,7 @@ var coerce = {
   bigint: ((arg) => ZodBigInt.create({ ...arg, coerce: true })),
   date: ((arg) => ZodDate.create({ ...arg, coerce: true }))
 };
+var NEVER = INVALID;
 
 // ../../lib/api-zod/src/generated/api.ts
 var HealthCheckResponse = objectType({
@@ -64541,6 +64696,7 @@ __export(schema_exports, {
   customerScansTable: () => customerScansTable,
   deviceCodesTable: () => deviceCodesTable,
   locationsTable: () => locationsTable,
+  marketedByTable: () => marketedByTable,
   passkeysTable: () => passkeysTable,
   passwordResetsTable: () => passwordResetsTable,
   productsTable: () => productsTable,
@@ -64732,6 +64888,22 @@ var passwordResetsTable = pgTable("password_resets", {
   otpCode: text("otp_code").notNull(),
   expiresAt: text("expires_at").notNull(),
   used: boolean("used").notNull().default(false),
+  createdAt: text("created_at").notNull().$defaultFn(() => (/* @__PURE__ */ new Date()).toISOString())
+});
+
+// ../../lib/db/src/schema/marketedBy.ts
+var marketedByTable = pgTable("marketed_by", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companiesTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  address: text("address"),
+  gstin: text("gstin"),
+  pan: text("pan"),
+  cin: text("cin"),
+  fssaiLicenseNo: text("fssai_license_no"),
+  drugLicenseNo: text("drug_license_no"),
   createdAt: text("created_at").notNull().$defaultFn(() => (/* @__PURE__ */ new Date()).toISOString())
 });
 
@@ -68430,12 +68602,22 @@ var router5 = (0, import_express5.Router)();
 router5.use("/products", requireAuth, requireModule("products"));
 router5.get("/products", async (req, res) => {
   const isMaster = req.user.role === "master" || req.user.role === "super_master";
-  const rows = isMaster ? await db.select().from(productsTable).orderBy(desc(productsTable.createdAt)) : req.user.companyId ? await db.select().from(productsTable).where(eq(productsTable.companyId, req.user.companyId)).orderBy(desc(productsTable.createdAt)) : [];
+  const rows = isMaster ? await db.select({
+    product: productsTable,
+    companyGstin: companiesTable.gstin,
+    companyName: companiesTable.name
+  }).from(productsTable).leftJoin(companiesTable, eq(productsTable.companyId, companiesTable.id)).orderBy(desc(productsTable.createdAt)) : req.user.companyId ? await db.select({
+    product: productsTable,
+    companyGstin: companiesTable.gstin,
+    companyName: companiesTable.name
+  }).from(productsTable).leftJoin(companiesTable, eq(productsTable.companyId, companiesTable.id)).where(eq(productsTable.companyId, req.user.companyId)).orderBy(desc(productsTable.createdAt)) : [];
   res.json(
     rows.map((r) => ({
-      ...r,
-      mrp: typeof r.mrp === "string" ? parseFloat(r.mrp) : r.mrp,
-      description: r.sapDescription || ""
+      ...r.product,
+      companyGstin: r.companyGstin || null,
+      companyName: r.companyName || null,
+      mrp: typeof r.product.mrp === "string" ? parseFloat(r.product.mrp) : r.product.mrp,
+      description: r.product.sapDescription || ""
     }))
   );
 });
@@ -68823,75 +69005,11 @@ router7.post("/batches", async (req, res) => {
     res.status(400).json({ error: "Batch number must be unique per product" });
   }
 });
-router7.put("/batches/:id", async (req, res) => {
-  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const id = parseInt(rawId ?? "", 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
-  }
-  const [targetBatch] = await db.select({ companyId: productsTable.companyId }).from(batchesTable).innerJoin(productsTable, eq(batchesTable.productId, productsTable.id)).where(eq(batchesTable.id, id));
-  if (!targetBatch) {
-    res.status(404).json({ error: "Batch not found" });
-    return;
-  }
-  if (req.user.role !== "master" && req.user.role !== "super_master") {
-    if (!req.user.companyId || targetBatch.companyId !== req.user.companyId) {
-      res.status(403).json({ error: "Forbidden: Cannot edit batches outside your assigned company" });
-      return;
-    }
-  }
-  const parsed = CreateBatchBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-  try {
-    const [row] = await db.update(batchesTable).set({
-      productId: parsed.data.productId,
-      batchNumber: parsed.data.batchNumber,
-      mfgDate: parsed.data.mfgDate.toISOString(),
-      expiryDate: parsed.data.expiryDate.toISOString()
-    }).where(eq(batchesTable.id, id)).returning();
-    if (!row) {
-      res.status(404).json({ error: "Batch not found" });
-      return;
-    }
-    const [withProduct] = await db.select({
-      id: batchesTable.id,
-      productId: batchesTable.productId,
-      productName: productsTable.name,
-      batchNumber: batchesTable.batchNumber,
-      mfgDate: batchesTable.mfgDate,
-      expiryDate: batchesTable.expiryDate,
-      createdAt: batchesTable.createdAt
-    }).from(batchesTable).innerJoin(productsTable, eq(batchesTable.productId, productsTable.id)).where(eq(batchesTable.id, row.id));
-    res.json(withProduct);
-  } catch (err) {
-    req.log.error({ err }, "Batch update failed");
-    res.status(400).json({ error: "Batch number must be unique per product" });
-  }
+router7.put("/batches/:id", async (_req, res) => {
+  res.status(403).json({ error: "Batches cannot be edited once created" });
 });
-router7.delete("/batches/:id", async (req, res) => {
-  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const id = parseInt(raw ?? "", 10);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Invalid id" });
-    return;
-  }
-  const [targetBatch] = await db.select({ companyId: productsTable.companyId }).from(batchesTable).innerJoin(productsTable, eq(batchesTable.productId, productsTable.id)).where(eq(batchesTable.id, id));
-  if (!targetBatch) {
-    res.status(404).json({ error: "Batch not found" });
-    return;
-  }
-  if (req.user.role !== "master" && req.user.role !== "super_master") {
-    if (!req.user.companyId || targetBatch.companyId !== req.user.companyId) {
-      res.status(403).json({ error: "Forbidden: Cannot delete batches outside your assigned company" });
-      return;
-    }
-  }
-  await db.delete(batchesTable).where(eq(batchesTable.id, id));
-  res.sendStatus(204);
+router7.delete("/batches/:id", async (_req, res) => {
+  res.status(403).json({ error: "Batches cannot be deleted once created" });
 });
 var batches_default = router7;
 
@@ -69864,8 +69982,138 @@ router11.post("/subscription/set", async (req, res) => {
 });
 var subscription_default = router11;
 
-// src/routes/system.ts
+// src/routes/marketedBy.ts
 var import_express12 = __toESM(require_express2(), 1);
+init_drizzle_orm();
+var router12 = (0, import_express12.Router)();
+router12.use("/marketed-by", requireAuth);
+var marketedBySchema = external_exports.object({
+  companyId: external_exports.coerce.number().optional().nullable(),
+  name: external_exports.string().min(1, "Marketed By entity name is required"),
+  email: external_exports.string().email("Invalid email").optional().or(external_exports.literal("")),
+  phone: external_exports.string().optional().or(external_exports.literal("")),
+  address: external_exports.string().optional().or(external_exports.literal("")),
+  gstin: external_exports.string().optional().or(external_exports.literal("")),
+  pan: external_exports.string().optional().or(external_exports.literal("")),
+  cin: external_exports.string().optional().or(external_exports.literal("")),
+  fssaiLicenseNo: external_exports.string().optional().or(external_exports.literal("")),
+  drugLicenseNo: external_exports.string().optional().or(external_exports.literal(""))
+});
+router12.get("/marketed-by", async (req, res) => {
+  const isMaster = req.user.role === "master" || req.user.role === "super_master";
+  const userCompanyId = req.user.companyId;
+  let query = db.select({
+    id: marketedByTable.id,
+    companyId: marketedByTable.companyId,
+    companyName: companiesTable.name,
+    name: marketedByTable.name,
+    email: marketedByTable.email,
+    phone: marketedByTable.phone,
+    address: marketedByTable.address,
+    gstin: marketedByTable.gstin,
+    pan: marketedByTable.pan,
+    cin: marketedByTable.cin,
+    fssaiLicenseNo: marketedByTable.fssaiLicenseNo,
+    drugLicenseNo: marketedByTable.drugLicenseNo,
+    createdAt: marketedByTable.createdAt
+  }).from(marketedByTable).leftJoin(companiesTable, eq(marketedByTable.companyId, companiesTable.id)).orderBy(desc(marketedByTable.createdAt));
+  if (!isMaster) {
+    if (!userCompanyId) {
+      res.json([]);
+      return;
+    }
+    const rows2 = await query.where(eq(marketedByTable.companyId, userCompanyId));
+    res.json(rows2);
+    return;
+  }
+  const rows = await query;
+  res.json(rows);
+});
+router12.post("/marketed-by", async (req, res) => {
+  const parsed = marketedBySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
+    return;
+  }
+  const isMaster = req.user.role === "master" || req.user.role === "super_master";
+  let targetCompanyId = isMaster ? parsed.data.companyId : req.user.companyId;
+  if (!targetCompanyId && !isMaster) {
+    res.status(403).json({ error: "No assigned company found" });
+    return;
+  }
+  const [row] = await db.insert(marketedByTable).values({
+    companyId: targetCompanyId ? Number(targetCompanyId) : null,
+    name: parsed.data.name.trim(),
+    email: parsed.data.email || null,
+    phone: parsed.data.phone || null,
+    address: parsed.data.address || null,
+    gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
+    pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
+    cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
+    fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
+    drugLicenseNo: parsed.data.drugLicenseNo || null
+  }).returning();
+  res.status(201).json(row);
+});
+router12.put("/marketed-by/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const parsed = marketedBySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message || "Invalid input" });
+    return;
+  }
+  const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
+  if (!existing) {
+    res.status(404).json({ error: "Record not found" });
+    return;
+  }
+  const isMaster = req.user.role === "master" || req.user.role === "super_master";
+  if (!isMaster && existing.companyId !== req.user.companyId) {
+    res.status(403).json({ error: "Forbidden: Cannot edit record for another company" });
+    return;
+  }
+  const targetCompanyId = isMaster ? parsed.data.companyId !== void 0 ? parsed.data.companyId : existing.companyId : existing.companyId;
+  const [updated] = await db.update(marketedByTable).set({
+    companyId: targetCompanyId ? Number(targetCompanyId) : null,
+    name: parsed.data.name.trim(),
+    email: parsed.data.email || null,
+    phone: parsed.data.phone || null,
+    address: parsed.data.address || null,
+    gstin: parsed.data.gstin ? parsed.data.gstin.trim().toUpperCase() : null,
+    pan: parsed.data.pan ? parsed.data.pan.trim().toUpperCase() : null,
+    cin: parsed.data.cin ? parsed.data.cin.trim().toUpperCase() : null,
+    fssaiLicenseNo: parsed.data.fssaiLicenseNo || null,
+    drugLicenseNo: parsed.data.drugLicenseNo || null
+  }).where(eq(marketedByTable.id, id)).returning();
+  res.json(updated);
+});
+router12.delete("/marketed-by/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const [existing] = await db.select().from(marketedByTable).where(eq(marketedByTable.id, id));
+  if (!existing) {
+    res.status(404).json({ error: "Record not found" });
+    return;
+  }
+  const isMaster = req.user.role === "master" || req.user.role === "super_master";
+  if (!isMaster && existing.companyId !== req.user.companyId) {
+    res.status(403).json({ error: "Forbidden: Cannot delete record for another company" });
+    return;
+  }
+  await db.delete(marketedByTable).where(eq(marketedByTable.id, id));
+  res.sendStatus(204);
+});
+var marketedBy_default = router12;
+
+// src/routes/system.ts
+var import_express13 = __toESM(require_express2(), 1);
 
 // src/lib/db-reset.ts
 init_drizzle_orm();
@@ -70279,7 +70527,7 @@ async function resetAndSeedDatabase(dbInstance, seedData) {
 }
 
 // src/routes/system.ts
-var router12 = (0, import_express12.Router)();
+var router13 = (0, import_express13.Router)();
 var readConfig = async () => {
   let hideMappingCode = true;
   let datamatrixUrlMode = false;
@@ -70376,11 +70624,11 @@ var writeConfig = async (config2) => {
   } catch (err) {
   }
 };
-router12.get("/system-config", async (req, res) => {
+router13.get("/system-config", async (req, res) => {
   const config2 = await readConfig();
   res.json(config2);
 });
-router12.post("/system-config", requireAuth, requireRole("super_master"), async (req, res) => {
+router13.post("/system-config", requireAuth, requireRole("super_master"), async (req, res) => {
   const { hideMappingCode, datamatrixUrlMode, hidePackagingHierarchy, hidePackagingLevel, enableOtpSystem, enableCustomerScanOtp } = req.body;
   const updates = {};
   if (hideMappingCode !== void 0) {
@@ -70429,8 +70677,8 @@ router12.post("/system-config", requireAuth, requireRole("super_master"), async 
   const config2 = await readConfig();
   res.json({ success: true, config: config2 });
 });
-router12.use("/system", requireAuth, requireRole("super_master"));
-router12.post("/system/reset-database", async (req, res) => {
+router13.use("/system", requireAuth, requireRole("super_master"));
+router13.post("/system/reset-database", async (req, res) => {
   try {
     const { seedData } = req.body;
     req.log.info("Supermaster database reset requested...");
@@ -70442,7 +70690,7 @@ router12.post("/system/reset-database", async (req, res) => {
     res.status(500).json({ error: err.message || "Failed to reset database" });
   }
 });
-router12.post("/system/reset-id-sequence", async (req, res) => {
+router13.post("/system/reset-id-sequence", async (req, res) => {
   try {
     const { sql: sql2 } = await Promise.resolve().then(() => (init_drizzle_orm(), drizzle_orm_exports));
     await db.execute(sql2`
@@ -70460,7 +70708,7 @@ router12.post("/system/reset-id-sequence", async (req, res) => {
     res.status(500).json({ error: err.message || "Failed to reset ID sequences" });
   }
 });
-router12.get("/system/info", async (req, res) => {
+router13.get("/system/info", async (req, res) => {
   try {
     res.json({
       env: process.env,
@@ -70476,7 +70724,7 @@ router12.get("/system/info", async (req, res) => {
     res.status(500).json({ error: err.message || "Failed to fetch system info" });
   }
 });
-router12.get("/system/smtp-status", async (req, res) => {
+router13.get("/system/smtp-status", async (req, res) => {
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
   const port = parseInt(process.env.SMTP_PORT || "587", 10);
   const secure = process.env.SMTP_SECURE === "true";
@@ -70522,23 +70770,24 @@ router12.get("/system/smtp-status", async (req, res) => {
     });
   }
 });
-var system_default = router12;
+var system_default = router13;
 
 // src/routes/index.ts
-var router13 = (0, import_express13.Router)();
-router13.use(health_default);
-router13.use(auth_default);
-router13.use(companies_default);
-router13.use(users_default);
-router13.use(products_default);
-router13.use(locations_default);
-router13.use(batches_default);
-router13.use(codes_default);
-router13.use(reports_default);
-router13.use(upload_default);
-router13.use(subscription_default);
-router13.use(system_default);
-var routes_default = router13;
+var router14 = (0, import_express14.Router)();
+router14.use(health_default);
+router14.use(auth_default);
+router14.use(companies_default);
+router14.use(users_default);
+router14.use(products_default);
+router14.use(locations_default);
+router14.use(batches_default);
+router14.use(codes_default);
+router14.use(reports_default);
+router14.use(upload_default);
+router14.use(subscription_default);
+router14.use(marketedBy_default);
+router14.use(system_default);
+var routes_default = router14;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -70624,7 +70873,7 @@ var loadUser = async (req, res, next) => {
 // src/app.ts
 import path3 from "path";
 import fs2 from "fs";
-var app = (0, import_express14.default)();
+var app = (0, import_express15.default)();
 app.set("trust proxy", 1);
 app.use(
   (0, import_pino_http.pinoHttp)({
@@ -70651,8 +70900,8 @@ app.use(
     credentials: true
   })
 );
-app.use(import_express14.default.json({ limit: "1mb" }));
-app.use(import_express14.default.urlencoded({ extended: true }));
+app.use(import_express15.default.json({ limit: "1mb" }));
+app.use(import_express15.default.urlencoded({ extended: true }));
 app.use((0, import_cookie_parser.default)(process.env["SESSION_SECRET"] ?? "dev-insecure-secret"));
 app.use(loadUser);
 app.use("/api", routes_default);
@@ -70660,7 +70909,7 @@ var uploadDir2 = process.env.VERCEL ? "/tmp" : path3.resolve(__dirname, "../uplo
 if (!fs2.existsSync(uploadDir2)) {
   fs2.mkdirSync(uploadDir2, { recursive: true });
 }
-app.use("/api/uploads", import_express14.default.static(uploadDir2));
+app.use("/api/uploads", import_express15.default.static(uploadDir2));
 var app_default = app;
 export {
   app_default as default

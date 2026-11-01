@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useGetCurrentUser, useListCompanies } from "@workspace/api-client-react";
+import { useGetCurrentUser, useListCompanies, customFetch } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { Plus, Building, Trash2, Edit, Search, Briefcase, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,24 +55,16 @@ export default function MarketedByPage() {
   const { data: marketedByList = [], isLoading } = useQuery<MarketedByItem[]>({
     queryKey: ["/api/marketed-by"],
     queryFn: async () => {
-      const res = await fetch("/api/marketed-by");
-      if (!res.ok) throw new Error("Failed to fetch Marketed By list");
-      return res.json();
+      return customFetch<MarketedByItem[]>("/api/marketed-by");
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (payload: typeof formData) => {
-      const res = await fetch("/api/marketed-by", {
+      return customFetch<MarketedByItem>("/api/marketed-by", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create entity");
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/marketed-by"] });
@@ -86,16 +78,10 @@ export default function MarketedByPage() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, payload }: { id: number; payload: typeof formData }) => {
-      const res = await fetch(`/api/marketed-by/${id}`, {
+      return customFetch<MarketedByItem>(`/api/marketed-by/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to update entity");
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/marketed-by"] });
@@ -109,8 +95,7 @@ export default function MarketedByPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/marketed-by/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete entity");
+      return customFetch(`/api/marketed-by/${id}`, { method: "DELETE" });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/marketed-by"] });
@@ -124,7 +109,7 @@ export default function MarketedByPage() {
   const openCreateDialog = () => {
     setEditingItem(null);
     setFormData({
-      companyId: isMaster ? (companies[0]?.id || undefined) : undefined,
+      companyId: isMaster ? (companies[0]?.id || undefined) : (user?.companyId || undefined),
       name: "",
       email: "",
       phone: "",
@@ -141,7 +126,7 @@ export default function MarketedByPage() {
   const openEditDialog = (item: MarketedByItem) => {
     setEditingItem(item);
     setFormData({
-      companyId: item.companyId || undefined,
+      companyId: item.companyId || (user?.companyId || undefined),
       name: item.name,
       email: item.email || "",
       phone: item.phone || "",
@@ -166,10 +151,14 @@ export default function MarketedByPage() {
       toast.error("Marketed By entity name is required");
       return;
     }
+    const finalPayload = {
+      ...formData,
+      companyId: isMaster ? formData.companyId : (user?.companyId || formData.companyId),
+    };
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, payload: formData });
+      updateMutation.mutate({ id: editingItem.id, payload: finalPayload });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(finalPayload);
     }
   };
 
@@ -355,7 +344,18 @@ export default function MarketedByPage() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4 py-2">
-            {isMaster && (
+            {!isMaster ? (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Parent Company</Label>
+                <Input 
+                  readOnly 
+                  disabled 
+                  value={user?.companyName || (user as any)?.company?.name || (user?.companyId ? `Company #${user.companyId}` : "Assigned Parent Company")} 
+                  className="w-full bg-[#F1F5F9] border-[#E2E8F0] text-slate-700 cursor-not-allowed font-semibold text-sm h-10"
+                />
+                <p className="text-[11px] text-slate-500">This entity will be associated with your company as its parent company.</p>
+              </div>
+            ) : (
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Parent Company</Label>
                 <Select 

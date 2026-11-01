@@ -7,6 +7,7 @@ import {
   useListCompanies,
   getListProductsQueryKey,
   useListProducts,
+  customFetch,
 } from "@workspace/api-client-react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -85,9 +86,11 @@ export default function NewProduct() {
   const { data: marketedByList = [] } = useQuery<any[]>({
     queryKey: ["/api/marketed-by"],
     queryFn: async () => {
-      const res = await fetch("/api/marketed-by");
-      if (!res.ok) return [];
-      return res.json();
+      try {
+        return await customFetch<any[]>("/api/marketed-by");
+      } catch {
+        return [];
+      }
     },
   });
 

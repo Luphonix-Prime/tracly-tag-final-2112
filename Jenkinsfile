@@ -112,9 +112,10 @@ pipeline {
                     sh '''
                         export KUBECONFIG="${WORKSPACE}/.kube/config"
 
-                        echo "[*] Deleting previous deployments in namespace ${NAMESPACE}..."
+                        echo "[*] Deleting previous deployments and PVC storage in namespace ${NAMESPACE}..."
                         kubectl delete deployment --all -n "${NAMESPACE}" --timeout=60s || true
                         kubectl delete statefulset --all -n "${NAMESPACE}" --timeout=60s || true
+                        kubectl delete pvc --all -n "${NAMESPACE}" --timeout=60s || true
                         kubectl delete pod --all -n "${NAMESPACE}" --force --grace-period=0 || true
 
                         echo "[*] Purging unused Docker build cache & dangling images..."

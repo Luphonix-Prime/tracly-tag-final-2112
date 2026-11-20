@@ -16,6 +16,7 @@ pipeline {
         booleanParam(name: 'AUTO_BOOTSTRAP_K3S', defaultValue: true, description: 'Auto-install lightweight K3s cluster on VPS if not detected')
         booleanParam(name: 'TRIGGER_ROLLOUT_RESTART', defaultValue: true, description: 'Enforce zero-downtime rolling restart of microservices')
         booleanParam(name: 'PURGE_AND_RESET_ALL', defaultValue: false, description: 'Wipe all existing K8s pods, delete old Docker images and build caches before deploying')
+        booleanParam(name: 'SEED_DEFAULT_USERS', defaultValue: true, description: 'Automatically seed default users (supermaster, master, demo_admin) so login works immediately')
         booleanParam(name: 'NO_CACHE', defaultValue: true, description: 'Build Docker images with --no-cache to guarantee fresh code')
     }
 
@@ -321,6 +322,47 @@ pipeline {
 
                         echo "Waiting for frontend deployment rollout to complete..."
                         kubectl rollout status deployment/tracelytag-frontend -n "${env.NAMESPACE}" --timeout=180s
+                    """
+                }
+            }
+        }
+
+        stage('Seed Default Users & Ensure Login') {
+            when {
+                expression { return params.SEED_DEFAULT_USERS || params.PURGE_AND_RESET_ALL }
+            }
+            steps {
+                script {
+                    echo "[*] Seeding default database users (supermaster, master, demo_admin)..."
+                    sh """
+                        export KUBECONFIG="${WORKSPACE}/.kube/config"
+
+                        echo "[*] Waiting for backend pod to be ready..."
+                        kubectl wait --for=condition=Ready pod -l app=tracelytag-backend -n "${env.NAMESPACE}" --timeout=120s || true
+
+                        BACKEND_POD=\$(kubectl get pods -n "${env.NAMESPACE}" -l app=tracelytag-backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+
+                        if [ -n "\${BACKEND_POD}" ]; then
+                            echo "[+] Running automated database seed in backend pod: \${BACKEND_POD}..."
+                            kubectl exec -n "${env.NAMESPACE}" "\${BACKEND_POD}" -- node ./artifacts/api-server/dist/seed.mjs || true
+
+                            echo "[+] Verifying active user accounts in database..."
+                            kubectl exec -n "${env.NAMESPACE}" "\${BACKEND_POD}" -- node -e '
+                                import("@workspace/db").then(async ({ db, usersTable }) => {
+                                    const users = await db.select({ username: usersTable.username, role: usersTable.role }).from(usersTable);
+                                    console.log("==========================================");
+                                    console.log("Verified Active Users in Database (" + users.length + "):");
+                                    users.forEach(u => console.log(" - User: " + u.username + " (" + u.role + ")"));
+                                    console.log("==========================================");
+                                    process.exit(0);
+                                }).catch((e) => {
+                                    console.log("User verification notice:", e.message);
+                                    process.exit(0);
+                                });
+                            ' || true
+                        else
+                            echo "[WARNING] No backend pod found to execute user seed."
+                        fi
                     """
                 }
             }

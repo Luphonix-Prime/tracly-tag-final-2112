@@ -327,7 +327,7 @@ pipeline {
             }
         }
 
-        stage('Seed Default Users & Ensure Login') {
+        stage('Seed Default Users & Ensure Logins') {
             when {
                 expression { return params.SEED_DEFAULT_USERS || params.PURGE_AND_RESET_ALL }
             }

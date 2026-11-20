@@ -15,6 +15,11 @@ metadata:
     # Enable gzip compression
     nginx.ingress.kubernetes.io/enable-real-ip: "true"
 spec:
+  tls:
+    - hosts:
+        - app.tracelytag.com
+        - api.tracelytag.com
+      secretName: tracelytag-tls-cert
   rules:
     # 1. Direct VPS IP Access (e.g. visiting http://<VPS_IP>/ in browser)
     - http:

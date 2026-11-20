@@ -29,6 +29,8 @@ spec:
       labels:
         app: tracelytag-postgres
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: postgres
           image: postgres:16-alpine

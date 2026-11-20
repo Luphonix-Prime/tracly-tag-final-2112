@@ -13,7 +13,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: db-verify
-          image: postgres:18-alpine
+          image: postgres:16-alpine
           env:
             - name: PGPASSWORD
               valueFrom:

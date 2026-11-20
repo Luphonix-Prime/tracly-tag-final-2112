@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracelytag-postgres-pvc
+  namespace: tracelytag
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,7 +31,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:18-alpine
+          image: postgres:16-alpine
           ports:
             - containerPort: 5432
               name: postgres
@@ -39,12 +51,37 @@ spec:
             limits:
               cpu: "1000m"
               memory: "1024Mi"
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - tracelytag
+                - -d
+                - tracelytag
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - tracelytag
+                - -d
+                - tracelytag
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           volumeMounts:
             - name: pg-data
               mountPath: /var/lib/postgresql/data
       volumes:
         - name: pg-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: tracelytag-postgres-pvc
 ---
 apiVersion: v1
 kind: Service

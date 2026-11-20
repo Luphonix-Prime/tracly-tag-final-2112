@@ -126,9 +126,12 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     `,
   };
 
-  // 1. Build local server (dist/index.mjs)
+  // 1. Build local server (dist/index.mjs) and seed tool (dist/seed.mjs)
   await esbuild({
-    entryPoints: [path.resolve(artifactDir, "src/index.ts")],
+    entryPoints: {
+      index: path.resolve(artifactDir, "src/index.ts"),
+      seed: path.resolve(artifactDir, "src/seed.ts"),
+    },
     platform: "node",
     bundle: true,
     format: "esm",
